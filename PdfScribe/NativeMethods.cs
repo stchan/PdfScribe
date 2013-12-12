@@ -154,28 +154,10 @@ namespace PdfScribe
                                   int bufferSize,
                                   ref int Bytes);
 
-        public static IntPtr DisableWow64Redirection()
-        {
-            IntPtr oldValue = IntPtr.Zero;
-            if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
-                if (!NativeMethods.Wow64DisableWow64FsRedirection(ref oldValue))
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not disable Wow64 file system redirection.");
-            return oldValue;
-        }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool Wow64RevertWow64FsRedirection(IntPtr ptr);
 
-        public static void RevertWow64Redirection(IntPtr oldValue)
-        {
-            if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
-            {
-                if (!NativeMethods.Wow64RevertWow64FsRedirection(oldValue))
-                {
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not reenable Wow64 file system redirection.");
-                }
-            }
-        }
         
     }
 }

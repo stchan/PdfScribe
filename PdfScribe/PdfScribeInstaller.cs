@@ -33,6 +33,7 @@ namespace PdfScribe
 
 
         #region Port operations
+
         private int AddPdfScribePort(string portName)
         {
             return DoXcvDataPortOperation(portName, "AddPort");
@@ -89,9 +90,12 @@ namespace PdfScribe
 
         #region Port Monitor
 
-        public bool AddPdfScribePortMonitor(String monitorName,
-                                            String monitorFile,
-                                            String monitorPath)
+        /// <summary>
+        /// Adds the PDF Scribe port monitor
+        /// </summary>
+        /// <param name="monitorFilePath">Directory where the uninstalled monitor dll is located</param>
+        /// <returns>true if the monitor is installed, false if install failed</returns>
+        public bool AddPdfScribePortMonitor(String monitorFilePath)
         {
             bool monitorAdded = false;
 
@@ -99,20 +103,20 @@ namespace PdfScribe
 
             try
             {
-                oldRedirectValue = NativeMethods.DisableWow64Redirection();
-                if (!DoesMonitorExist(monitorName))
+                oldRedirectValue = DisableWow64Redirection();
+                if (!DoesMonitorExist(PORTMONITOR))
                 {
                     // Copy the monitor DLL to
                     // the system directory
-                    String fileSourcePath = Path.Combine(monitorPath, monitorFile);
-                    String fileDestinationPath = Path.Combine(Environment.SystemDirectory, monitorFile);
+                    String fileSourcePath = Path.Combine(monitorFilePath, MONITORDLL);
+                    String fileDestinationPath = Path.Combine(Environment.SystemDirectory, MONITORDLL);
                     File.Copy(fileSourcePath, fileDestinationPath, true);
                     MONITOR_INFO_2 newMonitor = new MONITOR_INFO_2();
-                    newMonitor.pName = monitorName;
+                    newMonitor.pName = PORTMONITOR;
                     newMonitor.pEnvironment = ENVIRONMENT_64;
-                    newMonitor.pDLLName = monitorFile;
+                    newMonitor.pDLLName = MONITORDLL;
                     if (!AddPortMonitor(newMonitor))
-                        throw new Win32Exception(Marshal.GetLastWin32Error(), String.Format("Could not add port monitor {0}", monitorName));
+                        throw new Win32Exception(Marshal.GetLastWin32Error(), String.Format("Could not add port monitor {0}", PORTMONITOR));
                     else
                         monitorAdded = true;
                 }
@@ -120,25 +124,54 @@ namespace PdfScribe
             }
             finally
             {
-                /*
-                // Remove the monitor dll if copied
-                try
-                {
-                    File.Delete(Path.Combine(Environment.SystemDirectory, monitorFile));
-                }
-                catch { }
-                 */ 
-                if (oldRedirectValue != IntPtr.Zero) NativeMethods.RevertWow64Redirection(oldRedirectValue);
+                if (oldRedirectValue != IntPtr.Zero) RevertWow64Redirection(oldRedirectValue);
             }
 
 
             return monitorAdded;
         }
 
-        public bool RemoveSoftscanPortMonitor(String monitorName)
+
+        /// <summary>
+        /// Disables WOW64 system directory file redirection
+        /// if the current process is both
+        /// 32-bit, and running on a 64-bit OS
+        /// </summary>
+        /// <returns>A Handle, which should be retained to reenable redirection</returns>
+        private IntPtr DisableWow64Redirection()
+        {
+            IntPtr oldValue = IntPtr.Zero;
+            if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
+                if (!NativeMethods.Wow64DisableWow64FsRedirection(ref oldValue))
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not disable Wow64 file system redirection.");
+            return oldValue;
+        }
+
+        /// <summary>
+        /// Reenables WOW64 system directory file redirection
+        /// if the current process is both
+        /// 32-bit, and running on a 64-bit OS
+        /// </summary>
+        /// <param name="oldValue">A Handle value - should be retained from call to <see cref="DisableWow64Redirection"/></param>
+        private void RevertWow64Redirection(IntPtr oldValue)
+        {
+            if (Environment.Is64BitOperatingSystem && !Environment.Is64BitProcess)
+            {
+                if (!NativeMethods.Wow64RevertWow64FsRedirection(oldValue))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not reenable Wow64 file system redirection.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the PDF Scribe port monitor
+        /// </summary>
+        /// <returns>true if monitor successfully removed, false if removal failed</returns>
+        public bool RemovePdfScribePortMonitor()
         {
             bool monitorRemoved = false;
-            if ((NativeMethods.DeleteMonitor(null, ENVIRONMENT_64, monitorName)) != 0)
+            if ((NativeMethods.DeleteMonitor(null, ENVIRONMENT_64, PORTMONITOR)) != 0)
                 monitorRemoved = true;
             return monitorRemoved;
         }
@@ -236,17 +269,24 @@ namespace PdfScribe
 #if DEBUG
         public bool InstallSoftscanPrinter_Test()
         {
-            String printerName = PRINTERNAME;
             String driverSourceDirectory = @"C:\Code\OaisisRedmonInstaller\Lib\";
             String[] driverFilesToCopy = new String[] { DRIVERFILE, DRIVERDATAFILE, DRIVERHELPFILE, DRIVERUIFILE };
             String[] dependentFilesToCopy = new String[] { "PSCRIPT.NTF" };
-            return InstallPdfScribePrinter(printerName, driverSourceDirectory, driverFilesToCopy, dependentFilesToCopy);
+            return InstallPdfScribePrinter(driverSourceDirectory, driverFilesToCopy, dependentFilesToCopy);
         }
 #endif
-        public bool InstallPdfScribePrinter(String printerName,
-                                           String driverSourceDirectory,
-                                           String[] driverFilesToCopy,
-                                           String[] dependentFilesToCopy)
+
+        /// <summary>
+        /// Installs the port monitor, port,
+        /// printer drivers, and PDF Scribe virtual printer
+        /// </summary>
+        /// <param name="driverSourceDirectory">Directory where the uninstalled printer driver files are located</param>
+        /// <param name="driverFilesToCopy">An array containing the printer driver's filenames</param>
+        /// <param name="dependentFilesToCopy">An array containing dependent filenames</param>
+        /// <returns>true if printer installed, false if failed</returns>
+        public bool InstallPdfScribePrinter(String driverSourceDirectory,
+                                            String[] driverFilesToCopy,
+                                            String[] dependentFilesToCopy)
         {
             bool printerInstalled = false;
 
@@ -255,7 +295,7 @@ namespace PdfScribe
             {
                 if (CopyPrinterDriverFiles(driverSourceDirectory, driverFilesToCopy.Concat(dependentFilesToCopy).ToArray()))
                 {
-                    if (AddPdfScribePortMonitor(PORTMONITOR, MONITORDLL, driverSourceDirectory))
+                    if (AddPdfScribePortMonitor(driverSourceDirectory))
                     {
                         if (InstallPrinterDriver(driverDirectory, dependentFilesToCopy))
                         {
