@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfScribe", "PdfScribe\PdfScribe.csproj", "{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfScribeUnitTests", "PdfScribeUnitTests\PdfScribeUnitTests.csproj", "{D387573C-D122-461C-B525-1545DBDB4FBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Debug|x64.ActiveCfg = Debug|x64
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Debug|x64.Build.0 = Debug|x64
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Debug|x86.ActiveCfg = Debug|x86
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Debug|x86.Build.0 = Debug|x86
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Release|x64.ActiveCfg = Release|x64
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Release|x64.Build.0 = Release|x64
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Release|x86.ActiveCfg = Release|x86
+		{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}.Release|x86.Build.0 = Release|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Debug|x64.ActiveCfg = Debug|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Debug|x64.Build.0 = Debug|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Debug|x86.ActiveCfg = Debug|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Debug|x86.Build.0 = Debug|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Release|x64.ActiveCfg = Release|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Release|x86.ActiveCfg = Release|x86
+		{D387573C-D122-461C-B525-1545DBDB4FBA}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
