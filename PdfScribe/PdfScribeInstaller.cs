@@ -10,6 +10,24 @@ namespace PdfScribe
 {
     public class PdfScribeInstaller
     {
+        #region Printer Driver Win32 API Constants
+
+        const uint DRIVER_KERNELMODE = 0x00000001;
+        const uint DRIVER_USERMODE =  0x00000002;
+        
+        const uint APD_STRICT_UPGRADE =  0x00000001;
+        const uint APD_STRICT_DOWNGRADE = 0x00000002;
+        const uint APD_COPY_ALL_FILES = 0x00000004;
+        const uint APD_COPY_NEW_FILES = 0x00000008;
+        const uint APD_COPY_FROM_DIRECTORY = 0x00000010;
+        
+        const uint DPD_DELETE_UNUSED_FILES = 0x00000001;
+        const uint DPD_DELETE_SPECIFIC_VERSION = 0x00000002;
+        const uint DPD_DELETE_ALL_FILES = 0x00000004;
+
+        #endregion
+
+
 
         const string ENVIRONMENT_64 = "Windows x64";
         const string PRINTERNAME = "PDF Scribe";
@@ -23,16 +41,19 @@ namespace PdfScribe
         const string DRIVERMANUFACTURER = "S T Chan";
         
         const string DRIVERFILE = "PSCRIPT5.DLL";
-        const int DRIVERFILE_INDEX = 0;
         const string DRIVERUIFILE = "PS5UI.DLL";
-        const int DRIVERUIFILE_INDEX = 1;
         const string DRIVERHELPFILE = "PSCRIPT.HLP";
-        const int DRIVERHELPFILE_INDEX = 2;
         const string DRIVERDATAFILE = "SCPDFPRN.PPD";
-        const int DRIVERDATAFILE_INDEX = 3;
 
 
         #region Port operations
+
+#if DEBUG
+        public int AddPdfScribePort_Test(string portName)
+        {
+            return AddPdfScribePort(portName);
+        }
+#endif
 
         private int AddPdfScribePort(string portName)
         {
@@ -110,7 +131,15 @@ namespace PdfScribe
                     // the system directory
                     String fileSourcePath = Path.Combine(monitorFilePath, MONITORDLL);
                     String fileDestinationPath = Path.Combine(Environment.SystemDirectory, MONITORDLL);
-                    File.Copy(fileSourcePath, fileDestinationPath, true);
+                    try
+                    {
+                        File.Copy(fileSourcePath, fileDestinationPath, true);
+                    }
+                    catch (IOException)
+                    {
+                        // File in use, log -
+                        // this is OK because it means the file is already there
+                    }
                     MONITOR_INFO_2 newMonitor = new MONITOR_INFO_2();
                     newMonitor.pName = PORTMONITOR;
                     newMonitor.pEnvironment = ENVIRONMENT_64;
@@ -242,7 +271,7 @@ namespace PdfScribe
             }
             else
             {
-                throw new ApplicationException("Call to winspool.drv succeeded with a zero size buffer - unexpected error.");
+                throw new ApplicationException("Call to EnumMonitors in winspool.drv succeeded with a zero size buffer - unexpected error.");
             }
 
             return portMonitors;
@@ -269,7 +298,7 @@ namespace PdfScribe
 #if DEBUG
         public bool InstallSoftscanPrinter_Test()
         {
-            String driverSourceDirectory = @"C:\Code\OaisisRedmonInstaller\Lib\";
+            String driverSourceDirectory = @"C:\Code\PdfScribe\Lib\";
             String[] driverFilesToCopy = new String[] { DRIVERFILE, DRIVERDATAFILE, DRIVERHELPFILE, DRIVERUIFILE };
             String[] dependentFilesToCopy = new String[] { "PSCRIPT.NTF" };
             return InstallPdfScribePrinter(driverSourceDirectory, driverFilesToCopy, dependentFilesToCopy);
@@ -291,11 +320,11 @@ namespace PdfScribe
             bool printerInstalled = false;
 
             String driverDirectory = RetrievePrinterDriverDirectory();
-            if (AddPdfScribePort(PORTNAME) == 0)
+            if (AddPdfScribePortMonitor(driverSourceDirectory))
             {
                 if (CopyPrinterDriverFiles(driverSourceDirectory, driverFilesToCopy.Concat(dependentFilesToCopy).ToArray()))
                 {
-                    if (AddPdfScribePortMonitor(driverSourceDirectory))
+                    if (AddPdfScribePort(PORTNAME) == 0)
                     {
                         if (InstallPrinterDriver(driverDirectory, dependentFilesToCopy))
                         {
@@ -305,6 +334,22 @@ namespace PdfScribe
                 }
             }
             return printerInstalled;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool UninstallPdfScribePrinter()
+        {
+            bool printerUninstalled = false;
+
+            DeletePdfScribePrinter();
+            RemovePDFScribePrinterDriver();
+            DeletePdfScribePort(PORTNAME);
+            RemovePdfScribePortMonitor();
+            return printerUninstalled;
         }
 
         private bool CopyPrinterDriverFiles(String driverSourceDirectory,
@@ -412,6 +457,17 @@ namespace PdfScribe
         }
 
 
+        public bool RemovePDFScribePrinterDriver()
+        {
+            bool printerRemoved = NativeMethods.DeletePrinterDriverEx(null, ENVIRONMENT_64, DRIVERNAME, DPD_DELETE_UNUSED_FILES, 3);
+            if (!printerRemoved)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not remove PDF Scribe printer driver");
+            }
+            return printerRemoved;
+        }
+
+
         private bool AddPdfScribePrinter()
         {
             bool printerAdded = false;
@@ -439,6 +495,34 @@ namespace PdfScribe
             return printerAdded;
         }
 
+        private bool DeletePdfScribePrinter()
+        {
+            bool printerDeleted = false;
+
+            PRINTER_DEFAULTS scribeDefaults = new PRINTER_DEFAULTS();
+            scribeDefaults.DesiredAccess = 0x000F000C; // All access
+            scribeDefaults.pDatatype = null;
+            scribeDefaults.pDevMode = IntPtr.Zero;
+
+            IntPtr scribeHandle = IntPtr.Zero;
+            try
+            {
+                if (NativeMethods.OpenPrinter(PRINTERNAME, ref scribeHandle, scribeDefaults) != 0)
+                {
+                    if (NativeMethods.DeletePrinter(scribeHandle))
+                        printerDeleted = true;
+                }
+                else
+                {
+                    // log error
+                }
+            }
+            finally
+            {
+                if (scribeHandle != IntPtr.Zero) NativeMethods.ClosePrinter(scribeHandle);
+            }
+            return printerDeleted;
+        }
         #endregion
 
 

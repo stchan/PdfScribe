@@ -98,23 +98,23 @@ namespace PdfScribe
         public uint AveragePPM;
     }
 
-    public static class NativeMethods
+    internal static class NativeMethods
     {
+        #region winspool
+
         [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool EnumMonitors(string pName, uint level, IntPtr pMonitors, uint cbBuf, ref uint pcbNeeded, ref uint pcReturned);
+        internal static extern bool EnumMonitors(string pName, uint level, IntPtr pMonitors, uint cbBuf, ref uint pcbNeeded, ref uint pcReturned);
 
         [DllImport("winspool.drv", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern Int32 AddMonitor(String pName, UInt32 Level, ref MONITOR_INFO_2 pMonitors);
+        internal static extern Int32 AddMonitor(String pName, UInt32 Level, ref MONITOR_INFO_2 pMonitors);
 
         [DllImport("winspool.drv", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern Int32 DeleteMonitor(String pName, String pEnvironment, String pMonitorName);
+        internal static extern Int32 DeleteMonitor(String pName, String pEnvironment, String pMonitorName);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
 
 
         [DllImport("winspool.drv", EntryPoint = "XcvDataW", SetLastError = true)]
-        public static extern bool XcvData(IntPtr hXcv,
+        internal static extern bool XcvData(IntPtr hXcv,
                                         [MarshalAs(UnmanagedType.LPWStr)] string pszDataName,
                                         IntPtr pInputData,
                                         uint cbInputData,
@@ -126,38 +126,50 @@ namespace PdfScribe
 
 
         [DllImport("winspool.drv", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern int AddPrinter(string pName, uint Level, [In] ref PRINTER_INFO_2 pPrinter);
+        internal static extern int AddPrinter(string pName, uint Level, [In] ref PRINTER_INFO_2 pPrinter);
 
         [DllImport("winspool.drv", EntryPoint = "OpenPrinterA", SetLastError = true)]
-        public static extern int OpenPrinter(
-            string pPrinterName,
-            ref IntPtr phPrinter,
-            PRINTER_DEFAULTS pDefault);
+        internal static extern int OpenPrinter(string pPrinterName,
+                                               ref IntPtr phPrinter,
+                                               PRINTER_DEFAULTS pDefault);
 
         [DllImport("winspool.drv", SetLastError = true)]
-        public static extern int ClosePrinter(IntPtr hPrinter);    
+        internal static extern int ClosePrinter(IntPtr hPrinter);    
 
         [DllImport("winspool.drv", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern bool DeletePrinter(IntPtr hPrinter);
+        internal static extern bool DeletePrinter(IntPtr hPrinter);
 
 
         [DllImport("winspool.drv", EntryPoint="AddPrinterDriver", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool AddPrinterDriver(String pName,
+        internal static extern bool AddPrinterDriver(String pName,
                                                    int Level,
                                                    ref DRIVER_INFO_6 pDriverInfo);
 
         [DllImport("winspool.drv")]
-        public static extern bool GetPrinterDriverDirectory(StringBuilder pName,
+        internal static extern bool GetPrinterDriverDirectory(StringBuilder pName,
                                   StringBuilder pEnv,
                                   int Level,
                                   [Out] StringBuilder outPath,
                                   int bufferSize,
                                   ref int Bytes);
 
+        [DllImport("winspool.drv", EntryPoint = "DeletePrinterDriverEx", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern bool DeletePrinterDriverEx(String pName,
+                                                        String pEnvironment,
+                                                        String pDriverName,
+                                                        uint dwDeleteFlag,
+                                                        uint dwVersionFlag);
+
+        #endregion
+
+        #region Kernel32
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern bool Wow64RevertWow64FsRedirection(IntPtr ptr);
+        internal static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
 
-        
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern bool Wow64RevertWow64FsRedirection(IntPtr ptr);
+
+        #endregion
     }
 }
