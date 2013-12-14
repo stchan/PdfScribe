@@ -5,8 +5,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
+using System.Security;
 
-namespace PdfScribe
+using Microsoft.Win32;
+
+namespace PdfScribeCore
 {
     public class PdfScribeInstaller
     {
@@ -328,7 +331,8 @@ namespace PdfScribe
                     {
                         if (InstallPrinterDriver(driverDirectory, dependentFilesToCopy))
                         {
-                            printerInstalled = AddPdfScribePrinter();
+                            if (AddPdfScribePrinter())
+                                printerInstalled = ConfigurePdfScribePort();
                         }
                     }
                 }
@@ -459,12 +463,12 @@ namespace PdfScribe
 
         public bool RemovePDFScribePrinterDriver()
         {
-            bool printerRemoved = NativeMethods.DeletePrinterDriverEx(null, ENVIRONMENT_64, DRIVERNAME, DPD_DELETE_UNUSED_FILES, 3);
-            if (!printerRemoved)
+            bool driverRemoved = NativeMethods.DeletePrinterDriverEx(null, ENVIRONMENT_64, DRIVERNAME, DPD_DELETE_UNUSED_FILES, 3);
+            if (!driverRemoved)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not remove PDF Scribe printer driver");
             }
-            return printerRemoved;
+            return driverRemoved;
         }
 
 
@@ -525,6 +529,49 @@ namespace PdfScribe
         }
         #endregion
 
+
+        #region Configuration and Registry changes
+
+#if DEBUG
+        public bool ConfigurePdfScribePort_Test()
+        {
+            return ConfigurePdfScribePort();
+        }
+#endif
+
+        private bool ConfigurePdfScribePort()
+        {
+            bool registryChangesMade = false;
+            // Add all the registry info
+            // for the port and monitor
+            RegistryKey portConfiguration = Registry.LocalMachine.CreateSubKey("SYSTEM\\CurrentControlSet\\Control\\Print\\Monitors\\" + 
+                                                                                PORTMONITOR +
+                                                                                "\\Ports\\" + PORTNAME);
+            try
+            {
+                portConfiguration.SetValue("Description", "PDF Scribe", RegistryValueKind.String);
+                portConfiguration.SetValue("Command", "", RegistryValueKind.String);
+                portConfiguration.SetValue("Arguments", "", RegistryValueKind.String);
+                portConfiguration.SetValue("Printer", "", RegistryValueKind.String);
+                portConfiguration.SetValue("Output", 0, RegistryValueKind.DWord);
+                portConfiguration.SetValue("ShowWindow", 0, RegistryValueKind.DWord);
+                portConfiguration.SetValue("RunUser", 1, RegistryValueKind.DWord);
+                portConfiguration.SetValue("Delay", 300, RegistryValueKind.DWord);
+                portConfiguration.SetValue("LogFileUse", 0, RegistryValueKind.DWord);
+                portConfiguration.SetValue("LogFileName", "", RegistryValueKind.String);
+                portConfiguration.SetValue("LogFileDebug", 0, RegistryValueKind.DWord);
+                portConfiguration.SetValue("PrintError", 0, RegistryValueKind.DWord);
+                registryChangesMade = true;
+            }
+
+            catch (UnauthorizedAccessException)
+            { }
+            catch (SecurityException)
+            { }
+
+            return registryChangesMade;
+        }
+        #endregion
 
     }
 }

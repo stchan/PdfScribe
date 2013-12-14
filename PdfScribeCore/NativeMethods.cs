@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace PdfScribe
+namespace PdfScribeCore
 {
 
 

@@ -104,12 +104,6 @@
     <Compile Include="UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PdfScribe\PdfScribe.csproj">
-      <Project>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</Project>
-      <Name>PdfScribe</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="app.manifest" />
   </ItemGroup>
@@ -134,6 +128,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PdfScribeCore\PdfScribeCore.csproj">
+      <Project>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</Project>
+      <Name>PdfScribeCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

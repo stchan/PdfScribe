@@ -5,7 +5,7 @@ using System.Text;
 
 using NUnit.Framework;
 
-using PdfScribe;
+using PdfScribeCore;
 
 namespace PdfScribeUnitTests
 {
@@ -21,7 +21,7 @@ namespace PdfScribeUnitTests
         public void Test_DeletePdfScribePort()
         {
             var scribeInstaller = new PdfScribeInstaller();
-            scribeInstaller.DeletePdfScribePort("SSCAN");
+            scribeInstaller.DeletePdfScribePort("PDFSCRIBE:");
         }
 
         //[Test]
@@ -31,18 +31,25 @@ namespace PdfScribeUnitTests
             scribeInstaller.RemovePDFScribePrinterDriver();
         }
 
-        //[Test]
+        [Test]
         public void Test_InstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
             scribeInstaller.InstallSoftscanPrinter_Test();
         }
 
-        [Test]
+        //[Test]
         public void Test_UninstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
             scribeInstaller.UninstallPdfScribePrinter();
+        }
+
+        //[Test]
+        public void Test_RemovePdfScribePortMonitor()
+        {
+            var scribeInstaller = new PdfScribeInstaller();
+            scribeInstaller.RemovePdfScribePortMonitor();
         }
     }
 }

@@ -8,8 +8,8 @@
     <ProjectGuid>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PdfScribe</RootNamespace>
-    <AssemblyName>PdfScribe</AssemblyName>
+    <RootNamespace>PdfScribeCore</RootNamespace>
+    <AssemblyName>PdfScribeCore</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
