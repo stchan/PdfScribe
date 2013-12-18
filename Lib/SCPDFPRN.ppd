@@ -423,7 +423,7 @@
 *OpenGroup: PDF
 
 *% == The pdfwrite device can select different color spaces
-*OpenUI *ColorModel/PDF Colour Model: PickOne
+*OpenUI *ColorModel/PDF color Model: PickOne
 *DefaultColorModel: Default
 *OrderDependency: 20 AnySetup *ColorModel
 *ColorModel Default: ""
@@ -442,7 +442,7 @@
 *PDFSettings Prepress: ".distillersettings /prepress get setdistillerparams"
 *CloseUI: *PDFSettings
 
-*OpenUI *ColorImageFilter/PDF Colour Image Compression: PickOne
+*OpenUI *ColorImageFilter/PDF color Image Compression: PickOne
 *DefaultColorImageFilter: Default
 *OrderDependency: 40 AnySetup *ColorImageFilter
 *ColorImageFilter Default: ""
