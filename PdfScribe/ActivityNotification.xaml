@@ -1,0 +1,13 @@
+﻿<Window x:Class="PdfScribe.ActivityNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ActivityNotification" Height="300" Width="300" 
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True">
+    <Grid>
+        <Image Name="QuillPenBackground" Source="Adobe_CreatePDF_icon.PNG" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="9,0" ></Image>
+    </Grid>
+</Window>
