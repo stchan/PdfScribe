@@ -134,6 +134,10 @@
       <Project>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</Project>
       <Name>PdfScribeCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PdfScribe\PdfScribe.csproj">
+      <Project>{09BB3AA3-96D3-4BA1-BCB3-4E17067F42B2}</Project>
+      <Name>PdfScribe</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

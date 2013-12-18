@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace PdfScribe
 {
-    class Program
+    public class Program
     {
 
         static Application activityWindow;
@@ -20,17 +20,8 @@ namespace PdfScribe
         {
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
-            
-            var activityWindowThread = new Thread(new ThreadStart(() =>
-                {
-                    activityWindow = new Application();
-                    activityWindow.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                    activityWindow.Run(new ActivityNotification());
-                }
-            ));
-            activityWindowThread.SetApartmentState(ApartmentState.STA);
-            activityWindowThread.Start();
 
+            ShowActivitityNotificationWindow();
             Thread.Sleep(3000);
 
             String standardInputFilename = Path.GetTempFileName();
@@ -75,7 +66,7 @@ namespace PdfScribe
             finally
             {
                 File.Delete(standardInputFilename);
-                activityWindow.Dispatcher.InvokeShutdown();
+                CloseActivityNotificationWindow();
             }
         }
 
@@ -87,6 +78,25 @@ namespace PdfScribe
         static void Application_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+
+        public static void ShowActivitityNotificationWindow()
+        {
+            var activityWindowThread = new Thread(new ThreadStart(() =>
+            {
+                activityWindow = new Application();
+                activityWindow.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                activityWindow.Run(new ActivityNotification());
+            }
+            ));
+            activityWindowThread.SetApartmentState(ApartmentState.STA);
+            activityWindowThread.Start();
+        }
+
+        public static void CloseActivityNotificationWindow()
+        {
+            activityWindow.Dispatcher.InvokeShutdown();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using NUnit.Framework;
 
@@ -17,6 +18,7 @@ namespace PdfScribeUnitTests
         { }
         #endregion
 
+        #region PdfScribeCore Tests
         //[Test]
         public void Test_DeletePdfScribePort()
         {
@@ -31,7 +33,7 @@ namespace PdfScribeUnitTests
             scribeInstaller.RemovePDFScribePrinterDriver();
         }
 
-        [Test]
+        //[Test]
         public void Test_InstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
@@ -50,6 +52,16 @@ namespace PdfScribeUnitTests
         {
             var scribeInstaller = new PdfScribeInstaller();
             scribeInstaller.RemovePdfScribePortMonitor();
+        }
+
+        #endregion
+
+        [Test]
+        public void Test_ShowActivityWindows()
+        {
+            PdfScribe.Program.ShowActivitityNotificationWindow();
+            Thread.Sleep(3000);
+            PdfScribe.Program.CloseActivityNotificationWindow();
         }
     }
 }
