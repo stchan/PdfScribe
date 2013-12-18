@@ -18,7 +18,9 @@ namespace PdfScribe
         [STAThread]
         static void Main(string[] args)
         {
-
+            // Install the global exception handler
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
+            
             var activityWindowThread = new Thread(new ThreadStart(() =>
                 {
                     activityWindow = new Application();
@@ -34,9 +36,10 @@ namespace PdfScribe
             String standardInputFilename = Path.GetTempFileName();
             String outputFilename = Path.Combine(Path.GetTempPath(), "OAISISSOFTSCAN.PDF");
 
-            String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER", "-dCompatibilityLevel=1.4", "-dPDFSETTINGS=/prepress",   "-sDEVICE=pdfwrite",
+            // Only set absolute minimum parameters, let the postscript input
+            // dictate as much as possible
+            String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
                                               String.Format("-sOutputFile={0}", outputFilename), standardInputFilename };
-
 
             try
             {
@@ -74,6 +77,16 @@ namespace PdfScribe
                 File.Delete(standardInputFilename);
                 activityWindow.Dispatcher.InvokeShutdown();
             }
+        }
+
+        /// <summary>
+        /// All unhandled exceptions will bubble their way up here
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        static void Application_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

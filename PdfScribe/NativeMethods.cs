@@ -6,7 +6,13 @@ namespace PdfScribe
 {
     internal static class NativeMethods
     {
-    
+        /*
+        This code was adapted from Matthew Ephraim's Ghostscript.Net project -
+        external dll definitions moved into NativeMethods to
+        satisfy FxCop requirements
+        https://github.com/mephraim/ghostscriptsharp
+        */
+
         #region Hooks into Ghostscript DLL
         [DllImport("gsdll64.dll", EntryPoint = "gsapi_new_instance")]
         internal static extern int CreateAPIInstance(out IntPtr pinstance, IntPtr caller_handle);

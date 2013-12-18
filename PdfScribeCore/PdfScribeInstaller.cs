@@ -353,6 +353,7 @@ namespace PdfScribeCore
             RemovePDFScribePrinterDriver();
             DeletePdfScribePort(PORTNAME);
             RemovePdfScribePortMonitor();
+            RemovePdfScribePortConfig();
             return printerUninstalled;
         }
 
@@ -571,6 +572,24 @@ namespace PdfScribeCore
 
             return registryChangesMade;
         }
+
+        private bool RemovePdfScribePortConfig()
+        {
+            bool registryEntriesRemoved = false;
+
+            try
+            {
+                Registry.LocalMachine.DeleteSubKey("SYSTEM\\CurrentControlSet\\Control\\Print\\Monitors\\" +
+                                                    PORTMONITOR + "\\Ports\\" + PORTNAME, false);
+                registryEntriesRemoved = true;
+            }
+            catch (UnauthorizedAccessException)
+            { }
+
+            return registryEntriesRemoved;
+
+        }
+
         #endregion
 
     }

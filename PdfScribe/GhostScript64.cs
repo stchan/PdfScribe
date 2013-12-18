@@ -10,6 +10,8 @@ namespace PdfScribe
     {
         /*
         This code was adapted from Matthew Ephraim's Ghostscript.Net project
+        external dll definitions moved into NativeMethods to
+        satisfy FxCop requirements
         https://github.com/mephraim/ghostscriptsharp
         */
 
