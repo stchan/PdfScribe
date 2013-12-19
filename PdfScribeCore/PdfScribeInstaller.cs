@@ -86,15 +86,22 @@ namespace PdfScribeCore
 
         private int AddPdfScribePort()
         {
-            return DoXcvDataPortOperation(PORTNAME, "AddPort");
+            return DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "AddPort");
         }
 
-        public void DeletePdfScribePort(string portName)
+        public void DeletePdfScribePort()
         {
-            DoXcvDataPortOperation(portName, "DeletePort");
+            DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "DeletePort");
         }
 
-        private int DoXcvDataPortOperation(string portName, string xcvDataOperation)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="portName"></param>
+        /// <param name="xcvDataOperation"></param>
+        /// <returns></returns>
+        /// <remarks>I can't remember the name of the coder who wrote this code originally</remarks>
+        private int DoXcvDataPortOperation(string portName, string portMonitor, string xcvDataOperation)
         {
 
             int win32ErrorCode;
@@ -107,7 +114,7 @@ namespace PdfScribeCore
 
             IntPtr hPrinter = IntPtr.Zero;
 
-            if (NativeMethods.OpenPrinter(",XcvMonitor " + PORTMONITOR, ref hPrinter, def) != 0)
+            if (NativeMethods.OpenPrinter(",XcvMonitor " + portMonitor, ref hPrinter, def) != 0)
             {
                 if (!portName.EndsWith("\0"))
                     portName += "\0"; // Must be a null terminated string
@@ -467,7 +474,7 @@ namespace PdfScribeCore
 
             DeletePdfScribePrinter();
             RemovePDFScribePrinterDriver();
-            DeletePdfScribePort(PORTNAME);
+            DeletePdfScribePort();
             RemovePdfScribePortMonitor();
             RemovePdfScribePortConfig();
             return printerUninstalled;
@@ -669,11 +676,12 @@ namespace PdfScribeCore
             bool registryChangesMade = false;
             // Add all the registry info
             // for the port and monitor
-            RegistryKey portConfiguration = Registry.LocalMachine.CreateSubKey("SYSTEM\\CurrentControlSet\\Control\\Print\\Monitors\\" + 
-                                                                                PORTMONITOR +
-                                                                                "\\Ports\\" + PORTNAME);
+            RegistryKey portConfiguration;
             try
             {
+                portConfiguration = Registry.LocalMachine.CreateSubKey("SYSTEM\\CurrentControlSet\\Control\\Print\\Monitors\\" + 
+                                                                                PORTMONITOR +
+                                                                                "\\Ports\\" + PORTNAME);
                 portConfiguration.SetValue("Description", "PDF Scribe", RegistryValueKind.String);
                 portConfiguration.SetValue("Command", "", RegistryValueKind.String);
                 portConfiguration.SetValue("Arguments", "", RegistryValueKind.String);

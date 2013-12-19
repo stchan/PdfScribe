@@ -23,7 +23,7 @@ namespace PdfScribeUnitTests
         public void Test_DeletePdfScribePort()
         {
             var scribeInstaller = new PdfScribeInstaller();
-            scribeInstaller.DeletePdfScribePort("PDFSCRIBE:");
+            scribeInstaller.DeletePdfScribePort();
         }
 
         //[Test]
