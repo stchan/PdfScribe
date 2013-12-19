@@ -40,7 +40,7 @@ namespace PdfScribeUnitTests
             scribeInstaller.InstallSoftscanPrinter_Test();
         }
 
-        //[Test]
+        [Test]
         public void Test_UninstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
@@ -56,7 +56,7 @@ namespace PdfScribeUnitTests
 
         #endregion
 
-        [Test]
+        //[Test]
         public void Test_ShowActivityWindows()
         {
             PdfScribe.Program.ShowActivitityNotificationWindow();

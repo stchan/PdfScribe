@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
@@ -11,6 +12,7 @@ using Microsoft.Win32;
 
 namespace PdfScribeCore
 {
+ 
     public class PdfScribeInstaller
     {
         #region Printer Driver Win32 API Constants
@@ -30,14 +32,14 @@ namespace PdfScribeCore
 
         #endregion
 
-
+        private static readonly TraceSource logEventSource = new TraceSource("PdfScribeCore");
 
         const string ENVIRONMENT_64 = "Windows x64";
         const string PRINTERNAME = "PDF Scribe";
         const string DRIVERNAME = "PDF Scribe Virtual Printer";
         const string HARDWAREID = "PDFScribe_Driver0101";
         const string PORTMONITOR = "PDFSCRIBE";
-        const string MONITORDLL = "redmon64.dll";
+        const string MONITORDLL = "redmon64pdfscribe.dll";
         const string PORTNAME = "PSCRIBE:";
         const string PRINTPROCESOR = "winprint";
 
@@ -47,20 +49,44 @@ namespace PdfScribeCore
         const string DRIVERUIFILE = "PS5UI.DLL";
         const string DRIVERHELPFILE = "PSCRIPT.HLP";
         const string DRIVERDATAFILE = "SCPDFPRN.PPD";
+        
+        enum DriverFileIndex
+        {
+            Min = 0,
+            DriverFile = Min,
+            UIFile,
+            HelpFile,
+            DataFile,
+            Max = DataFile
+        };
 
+        readonly String[] printerDriverFiles = new String[] { DRIVERFILE, DRIVERUIFILE, DRIVERHELPFILE, DRIVERDATAFILE };
+        readonly String[] printerDriverDependentFiles = new String[] { "PSCRIPT.NTF" };
+
+        #region Error messages for Trace/Debug
+
+        const string FILENOTDELETED_INUSE = "{0} is being used by another process. File was not deleted.";
+        const string FILENOTDELETED_UNAUTHORIZED = "{0} is read-only, or its file permissions do not allow for deletion.";
+
+        const string WIN32ERROR = "Win32 error code {0}.";
+
+        const string NATIVE_COULDNOTENABLE64REDIRECTION = "Could not enable 64-bit file system redirection.";
+        const string NATIVE_COULDNOTREVERT64REDIRECTION = "Could not revert 64-bit file system redirection.";
+
+        #endregion
 
         #region Port operations
 
 #if DEBUG
-        public int AddPdfScribePort_Test(string portName)
+        public int AddPdfScribePort_Test()
         {
-            return AddPdfScribePort(portName);
+            return AddPdfScribePort();
         }
 #endif
 
-        private int AddPdfScribePort(string portName)
+        private int AddPdfScribePort()
         {
-            return DoXcvDataPortOperation(portName, "AddPort");
+            return DoXcvDataPortOperation(PORTNAME, "AddPort");
         }
 
         public void DeletePdfScribePort(string portName)
@@ -208,6 +234,67 @@ namespace PdfScribeCore
             return monitorRemoved;
         }
 
+        private bool DeletePdfScribePortMonitorDll()
+        {
+            return DeletePortMonitorDll(MONITORDLL);
+        }
+
+        private bool DeletePortMonitorDll(String monitorDll)
+        {
+            bool monitorDllRemoved = false;
+
+            String monitorDllFullPathname = String.Empty;
+            IntPtr oldRedirectValue = IntPtr.Zero;
+            try
+            {
+                oldRedirectValue = DisableWow64Redirection();
+
+                monitorDllFullPathname = Path.Combine(Environment.SystemDirectory, monitorDll);
+                
+                File.Delete(monitorDllFullPathname);
+                monitorDllRemoved = true;
+            }
+            catch (Win32Exception windows32Ex)
+            {
+                // This one is likely very bad -
+                // log and rethrow so we don't continue
+                // to try to uninstall
+                logEventSource.TraceEvent(TraceEventType.Critical, 
+                                          (int)TraceEventType.Critical, 
+                                          NATIVE_COULDNOTENABLE64REDIRECTION + String.Format(WIN32ERROR, windows32Ex.NativeErrorCode.ToString()));
+                throw;
+            }
+            catch (IOException)
+            {
+                // File still in use
+                logEventSource.TraceEvent(TraceEventType.Error, (int)TraceEventType.Error, String.Format(FILENOTDELETED_INUSE, monitorDllFullPathname));  
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // File is readonly, or file permissions do not allow delete
+                logEventSource.TraceEvent(TraceEventType.Error, (int)TraceEventType.Error, String.Format(FILENOTDELETED_INUSE, monitorDllFullPathname));
+            }
+            finally
+            {
+                try
+                {
+                    if (oldRedirectValue != IntPtr.Zero) RevertWow64Redirection(oldRedirectValue);
+                }
+                catch (Win32Exception windows32Ex)
+                {
+                    // Couldn't turn file redirection back on -
+                    // this is not good
+                    logEventSource.TraceEvent(TraceEventType.Critical, 
+                                              (int)TraceEventType.Critical, 
+                                              NATIVE_COULDNOTREVERT64REDIRECTION + String.Format(WIN32ERROR, windows32Ex.NativeErrorCode.ToString()));
+                    throw;
+                }
+            }
+
+            return monitorDllRemoved;
+
+        }
+
         private bool AddPortMonitor(MONITOR_INFO_2 newMonitor)
         {
             bool monitorAdded = false;
@@ -302,9 +389,7 @@ namespace PdfScribeCore
         public bool InstallSoftscanPrinter_Test()
         {
             String driverSourceDirectory = @"C:\Code\PdfScribe\Lib\";
-            String[] driverFilesToCopy = new String[] { DRIVERFILE, DRIVERDATAFILE, DRIVERHELPFILE, DRIVERUIFILE };
-            String[] dependentFilesToCopy = new String[] { "PSCRIPT.NTF" };
-            return InstallPdfScribePrinter(driverSourceDirectory, driverFilesToCopy, dependentFilesToCopy);
+            return InstallPdfScribePrinter(driverSourceDirectory);
         }
 #endif
 
@@ -316,26 +401,57 @@ namespace PdfScribeCore
         /// <param name="driverFilesToCopy">An array containing the printer driver's filenames</param>
         /// <param name="dependentFilesToCopy">An array containing dependent filenames</param>
         /// <returns>true if printer installed, false if failed</returns>
-        public bool InstallPdfScribePrinter(String driverSourceDirectory,
-                                            String[] driverFilesToCopy,
-                                            String[] dependentFilesToCopy)
+        public bool InstallPdfScribePrinter(String driverSourceDirectory)
         {
+
             bool printerInstalled = false;
+
 
             String driverDirectory = RetrievePrinterDriverDirectory();
             if (AddPdfScribePortMonitor(driverSourceDirectory))
             {
-                if (CopyPrinterDriverFiles(driverSourceDirectory, driverFilesToCopy.Concat(dependentFilesToCopy).ToArray()))
+                
+                //if (CopyPrinterDriverFiles(driverSourceDirectory, driverFilesToCopy.Concat(dependentFilesToCopy).ToArray()))
+                if (CopyPrinterDriverFiles(driverSourceDirectory, printerDriverFiles.Concat(printerDriverDependentFiles).ToArray()))
                 {
-                    if (AddPdfScribePort(PORTNAME) == 0)
+                    if (AddPdfScribePort() == 0)
                     {
-                        if (InstallPrinterDriver(driverDirectory, dependentFilesToCopy))
+                        if (InstallPdfScribePrinterDriver())
                         {
                             if (AddPdfScribePrinter())
-                                printerInstalled = ConfigurePdfScribePort();
+                            {
+                                if (ConfigurePdfScribePort())
+                                {
+                                    printerInstalled = true;
+                                }
+                                else
+                                {
+                                    // Failed to configure port
+                                }
+                            }
+                            else
+                            {
+                                // Failed to install printer
+                            }
+                        }
+                        else
+                        {
+                            // Failed to install printer driver
                         }
                     }
+                    else
+                    {
+                        // Failed to add printer port
+                    }
                 }
+                else
+                {
+                    //Failed to copy printer driver files
+                }
+            }
+            else
+            {
+                //Failed to add port monitor
             }
             return printerInstalled;
         }
@@ -414,35 +530,36 @@ namespace PdfScribeCore
             return allFilesDeleted;
         }
 
-        private bool InstallPrinterDriver(String driverSourceDirectory,
-                                          String[] dependentDriverFiles)
-        {
-            bool printerDriverInstalled = false;
-            DRIVER_INFO_6 printerDriverInfo = new DRIVER_INFO_6();
 
-            printerDriverInfo.cVersion = 3;
-            printerDriverInfo.pName = DRIVERNAME;
-            printerDriverInfo.pEnvironment = ENVIRONMENT_64;
-            printerDriverInfo.pDriverPath = Path.Combine(driverSourceDirectory, DRIVERFILE);
-            printerDriverInfo.pConfigFile = Path.Combine(driverSourceDirectory,DRIVERUIFILE);
-            printerDriverInfo.pHelpFile = Path.Combine(driverSourceDirectory,DRIVERHELPFILE);
-            printerDriverInfo.pDataFile = Path.Combine(driverSourceDirectory,DRIVERDATAFILE);
+        private bool InstallPdfScribePrinterDriver()
+        {
+
+            String driverSourceDirectory = RetrievePrinterDriverDirectory();
 
             StringBuilder nullTerminatedDependentFiles = new StringBuilder();
-            if (dependentDriverFiles != null &&
-                dependentDriverFiles.Length > 0)
+            if (printerDriverDependentFiles.Length > 0)
             {
-                for (int loop = 0; loop <= dependentDriverFiles.GetUpperBound(0); loop++)
+                for (int loop = 0; loop <= printerDriverDependentFiles.GetUpperBound(0); loop++)
                 {
-                    nullTerminatedDependentFiles.Append(dependentDriverFiles[loop]);
+                    nullTerminatedDependentFiles.Append(printerDriverDependentFiles[loop]);
                     nullTerminatedDependentFiles.Append("\0");
                 }
                 nullTerminatedDependentFiles.Append("\0");
             }
             else
             {
-                nullTerminatedDependentFiles.Append("\0\0"); 
+                nullTerminatedDependentFiles.Append("\0\0");
             }
+
+            DRIVER_INFO_6 printerDriverInfo = new DRIVER_INFO_6();
+
+            printerDriverInfo.cVersion = 3;
+            printerDriverInfo.pName = DRIVERNAME;
+            printerDriverInfo.pEnvironment = ENVIRONMENT_64;
+            printerDriverInfo.pDriverPath = Path.Combine(driverSourceDirectory, DRIVERFILE);
+            printerDriverInfo.pConfigFile = Path.Combine(driverSourceDirectory, DRIVERUIFILE);
+            printerDriverInfo.pHelpFile = Path.Combine(driverSourceDirectory, DRIVERHELPFILE);
+            printerDriverInfo.pDataFile = Path.Combine(driverSourceDirectory, DRIVERDATAFILE);
             printerDriverInfo.pDependentFiles = nullTerminatedDependentFiles.ToString();
 
             printerDriverInfo.pMonitorName = PORTMONITOR;
@@ -452,6 +569,14 @@ namespace PdfScribeCore
             printerDriverInfo.pszHardwareID = HARDWAREID;
             printerDriverInfo.pszProvider = DRIVERMANUFACTURER;
 
+
+            return InstallPrinterDriver(ref printerDriverInfo);
+        }
+
+        private bool InstallPrinterDriver(ref DRIVER_INFO_6 printerDriverInfo)
+        {
+            bool printerDriverInstalled = false;
+
             printerDriverInstalled = NativeMethods.AddPrinterDriver(null, 6, ref printerDriverInfo);
             if (printerDriverInstalled == false)
             {
@@ -460,7 +585,6 @@ namespace PdfScribeCore
             }
             return printerDriverInstalled;
         }
-
 
         public bool RemovePDFScribePrinterDriver()
         {
