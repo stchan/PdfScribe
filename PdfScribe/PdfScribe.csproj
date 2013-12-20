@@ -89,6 +89,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Common\PdfScribeSharedAssemblyInfo.cs">
+      <Link>PdfScribeSharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ActivityNotification.xaml.cs">
       <DependentUpon>ActivityNotification.xaml</DependentUpon>
     </Compile>

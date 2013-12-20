@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace PdfScribeCore
 {
 
+    #region Native Method Structures
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct MONITOR_INFO_2
@@ -97,6 +98,7 @@ namespace PdfScribeCore
         public uint cJobs;
         public uint AveragePPM;
     }
+    #endregion
 
     internal static class NativeMethods
     {
