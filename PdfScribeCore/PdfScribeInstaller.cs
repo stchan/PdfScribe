@@ -70,6 +70,8 @@ namespace PdfScribeCore
         const string FILENOTDELETED_INUSE = "{0} is being used by another process. File was not deleted.";
         const string FILENOTDELETED_UNAUTHORIZED = "{0} is read-only, or its file permissions do not allow for deletion.";
 
+        const string FILENOTCOPIED_PRINTERDRIVER = "Printer driver file was not copied. Exception message: {0}";
+
         const string WIN32ERROR = "Win32 error code {0}.";
 
         const string NATIVE_COULDNOTENABLE64REDIRECTION = "Could not enable 64-bit file system redirection.";
@@ -84,7 +86,11 @@ namespace PdfScribeCore
         {
             this.logEventSource = new TraceSource(logEventSourceNameDefault);
         }
-
+        /// <summary>
+        /// This override sets the
+        /// trace source to a specific name
+        /// </summary>
+        /// <param name="eventSourceName">Trace source name</param>
         public PdfScribeInstaller(String eventSourceName)
         {
             if (!String.IsNullOrEmpty(eventSourceName))
@@ -124,7 +130,8 @@ namespace PdfScribeCore
         /// <param name="portName"></param>
         /// <param name="xcvDataOperation"></param>
         /// <returns></returns>
-        /// <remarks>I can't remember the name of the coder who wrote this code originally</remarks>
+        /// <remarks>I can't remember the name of the developer who wrote this code originally,
+        /// so I can't provide a link or credit.</remarks>
         private int DoXcvDataPortOperation(string portName, string portMonitor, string xcvDataOperation)
         {
 
@@ -205,9 +212,21 @@ namespace PdfScribeCore
                     newMonitor.pEnvironment = ENVIRONMENT_64;
                     newMonitor.pDLLName = MONITORDLL;
                     if (!AddPortMonitor(newMonitor))
-                        throw new Win32Exception(Marshal.GetLastWin32Error(), String.Format("Could not add port monitor {0}", PORTMONITOR));
+                        logEventSource.TraceEvent(TraceEventType.Error,
+                                                  (int)TraceEventType.Error,
+                                                  String.Format("Could not add port monitor {0}", PORTMONITOR) + Environment.NewLine +
+                                                  String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
                     else
                         monitorAdded = true;
+                }
+                else
+                {
+                    // Monitor already installed -
+                    // log it, and keep going
+                    logEventSource.TraceEvent(TraceEventType.Warning,
+                                              (int)TraceEventType.Warning,
+                                              String.Format("Port monitor {0} already installed.", PORTMONITOR));
+                    monitorAdded = true;
                 }
 
             }
@@ -519,25 +538,51 @@ namespace PdfScribeCore
                     {
                         File.Copy(fileSourcePath, fileDestinationPath);
                     }
+                    catch (PathTooLongException)
+                    {
+                        // Will be caught by outer
+                        // IOException catch block
+                        throw;
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        // Will be caught by outer
+                        // IOException catch block
+                        throw;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // Will be caught by outer
+                        // IOException catch block
+                        throw;
+                    }
                     catch (IOException)
                     {
-                        // Just keep going - file was already
-                        // there, but we didn't overwrite
+                        // Just keep going - file was already there
+                        // Not really a problem
                         continue;
                     }
                 }
                 filesCopied = true;
             }
-            catch (UnauthorizedAccessException)
-            { }
-            catch (PathTooLongException)
-            { }
-            catch (DirectoryNotFoundException)
-            { }
-            catch (FileNotFoundException)
-            { }
-            catch (NotSupportedException)
-            { }
+            catch (IOException ioEx)
+            { 
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          String.Format(FILENOTCOPIED_PRINTERDRIVER, ioEx.Message));
+            }
+            catch (UnauthorizedAccessException unauthorizedEx)
+            {
+                logEventSource.TraceEvent(TraceEventType.Error,
+                            (int)TraceEventType.Error,
+                            String.Format(FILENOTCOPIED_PRINTERDRIVER, unauthorizedEx.Message));
+            }
+            catch (NotSupportedException notSupportedEx)
+            {
+                logEventSource.TraceEvent(TraceEventType.Error,
+                    (int)TraceEventType.Error,
+                    String.Format(FILENOTCOPIED_PRINTERDRIVER, notSupportedEx.Message));
+            }
 
 
             return filesCopied;

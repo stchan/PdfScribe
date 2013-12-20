@@ -14,14 +14,18 @@ namespace PdfScribe
     {
 
 
-        #region Error messages
+        #region Message constants
+        
         const string errorDialogCaption = "PDF Scribe"; // Error taskdialog caption text
+        
         const string errorDialogInstructionPDFGeneration = "There was a PDF generation error.";
         const string errorDialogInstructionCouldNotWrite = "Could not create the output file.";
         const string errorDialogInstructionUnexpectedError = "There was an unexpected, and unhandled error in PDF Scribe.";
 
         const string errorDialogTextFileInUse = "{0} is being used by another process.";
         const string errorDialogTextGhostScriptConversion = "Ghostscript error code {0}.";
+
+        const string warnFileNotDeleted = "{0} could not be deleted.";
 
         #endregion
 
@@ -69,26 +73,41 @@ namespace PdfScribe
             {
                 // We couldn't delete, or create a file
                 // because it was in use
+                logEventSource.TraceEvent(TraceEventType.Error, 
+                                          (int)TraceEventType.Error,
+                                          errorDialogInstructionCouldNotWrite +
+                                          Environment.NewLine +
+                                          "Exception message: " + ioEx.Message);
                 ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
-                                                                              errorDialogInstructionCouldNotWrite,
-                                                                              String.Empty);
+                                                                            errorDialogInstructionCouldNotWrite,
+                                                                            String.Empty);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException unauthorizedEx)
             {
                 // Couldn't delete a file
                 // because it was set to readonly
                 // or couldn't create a file
                 // because of permissions issues
+                logEventSource.TraceEvent(TraceEventType.Error, 
+                                          (int)TraceEventType.Error, 
+                                          errorDialogInstructionCouldNotWrite +
+                                          Environment.NewLine +
+                                          "Exception message: " + unauthorizedEx.Message);
                 ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
-                                                                              errorDialogInstructionCouldNotWrite,
-                                                                              String.Empty);
+                                                                            errorDialogInstructionCouldNotWrite,
+                                                                            String.Empty);
             }
             catch (ExternalException ghostscriptEx)
             {
                 // Ghostscript error
+                logEventSource.TraceEvent(TraceEventType.Error, 
+                                          (int)TraceEventType.Error, 
+                                          String.Format(errorDialogTextGhostScriptConversion, ghostscriptEx.ErrorCode.ToString()) +
+                                          Environment.NewLine +
+                                          "Exception message: " + ghostscriptEx.Message);
                 ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
-                                                                              errorDialogInstructionPDFGeneration,
-                                                                              String.Format(errorDialogTextGhostScriptConversion, ghostscriptEx.ErrorCode.ToString()));
+                                                                            errorDialogInstructionPDFGeneration,
+                                                                            String.Format(errorDialogTextGhostScriptConversion, ghostscriptEx.ErrorCode.ToString()));
 
             }
             finally
@@ -97,7 +116,12 @@ namespace PdfScribe
                 {
                     File.Delete(standardInputFilename);
                 }
-                catch {}
+                catch 
+                {
+                    logEventSource.TraceEvent(TraceEventType.Warning,
+                                              (int)TraceEventType.Warning,
+                                              String.Format(warnFileNotDeleted, standardInputFilename));
+                }
                 userDisplay.CloseActivityNotificationWindow();
             }
         }
@@ -109,9 +133,12 @@ namespace PdfScribe
         /// <param name="e"></param>
         static void Application_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            logEventSource.TraceEvent(TraceEventType.Critical,
+                                      (int)TraceEventType.Critical,
+                                      ((Exception)e.ExceptionObject).Message);
             ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
-                                                                          errorDialogInstructionUnexpectedError,
-                                                                          String.Empty);
+                                                                        errorDialogInstructionUnexpectedError,
+                                                                        String.Empty);
         }
 
 

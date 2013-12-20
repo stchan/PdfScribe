@@ -19,7 +19,9 @@ namespace PdfScribe
         private Application activityWindow = null;
 
         /// <summary>
-        /// 
+        /// Displays the floating frameless
+        /// activity notification window on
+        /// a separate thread
         /// </summary>
         public void ShowActivityNotificationWindow()
         {
@@ -39,8 +41,8 @@ namespace PdfScribe
         }
 
         /// <summary>
-        /// Shuts down the thread showing
-        /// the ActivityNotification WPF window
+        /// Shuts down the WPF Application showing
+        /// the ActivityNotification window
         /// </summary>
         public void CloseActivityNotificationWindow()
         {
