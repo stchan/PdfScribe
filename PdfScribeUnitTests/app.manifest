@@ -31,9 +31,11 @@
     </application>
   </compatibility>
   
-  <!-- Enable themes for Windows common controls and dialogs (Windows XP and later) -->
-  <!-- <dependency>
+  
+  <dependency>
+    <!-- Enable themes for Windows common controls and dialogs (Windows XP and later) -->
     <dependentAssembly>
+      <!-- Uncommented this so Visual Studio will show TaskDialogs properly while in debug mode -->
       <assemblyIdentity
           type="win32"
           name="Microsoft.Windows.Common-Controls"
@@ -43,6 +45,5 @@
           language="*"
         />
     </dependentAssembly>
-  </dependency>-->
-
+  </dependency>
 </asmv1:assembly>

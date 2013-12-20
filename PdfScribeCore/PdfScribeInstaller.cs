@@ -32,7 +32,9 @@ namespace PdfScribeCore
 
         #endregion
 
-        private static readonly TraceSource logEventSource = new TraceSource("PdfScribeCore");
+        //private static readonly TraceSource logEventSource = new TraceSource("PdfScribeCore");
+        private readonly TraceSource logEventSource;
+        private readonly String logEventSourceNameDefault = "PdfScribeCore";
 
         const string ENVIRONMENT_64 = "Windows x64";
         const string PRINTERNAME = "PDF Scribe";
@@ -72,6 +74,28 @@ namespace PdfScribeCore
 
         const string NATIVE_COULDNOTENABLE64REDIRECTION = "Could not enable 64-bit file system redirection.";
         const string NATIVE_COULDNOTREVERT64REDIRECTION = "Could not revert 64-bit file system redirection.";
+
+        #endregion
+
+
+        #region Constructors
+
+        public PdfScribeInstaller()
+        {
+            this.logEventSource = new TraceSource(logEventSourceNameDefault);
+        }
+
+        public PdfScribeInstaller(String eventSourceName)
+        {
+            if (!String.IsNullOrEmpty(eventSourceName))
+            {
+                this.logEventSource = new TraceSource(eventSourceName);
+            }
+            else
+            {
+                throw new ArgumentNullException("eventSourceName");
+            }
+        }
 
         #endregion
 

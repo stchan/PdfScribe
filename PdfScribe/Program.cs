@@ -1,31 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Windows;
 
 namespace PdfScribe
 {
     public class Program
     {
 
-        static Application activityWindow;
+
+        #region Error messages
+        const string errorDialogCaption = "PDF Scribe"; // Error taskdialog caption text
+        const string errorDialogInstructionPDFGeneration = "There was a PDF generation error.";
+        const string errorDialogInstructionCouldNotWrite = "Could not create the output file.";
+        const string errorDialogInstructionUnexpectedError = "There was an unexpected, and unhandled error in PDF Scribe.";
+
+        const string errorDialogTextFileInUse = "{0} is being used by another process.";
+        const string errorDialogTextGhostScriptConversion = "Ghostscript error code {0}.";
+
+        #endregion
+
+        #region Other constants
+        const string traceSourceName = "PdfScribe";
+
+        const string defaultOutputFilename = "OAISISSOFTSCAN.PDF";
+
+        #endregion
+
+        static ActivityNotificationPresenter userDisplay = new ActivityNotificationPresenter();
+        static TraceSource logEventSource = new TraceSource(traceSourceName);
 
         [STAThread]
         static void Main(string[] args)
         {
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
-
-            ShowActivitityNotificationWindow();
+            userDisplay.ShowActivityNotificationWindow();
             Thread.Sleep(3000);
 
             String standardInputFilename = Path.GetTempFileName();
-            String outputFilename = Path.Combine(Path.GetTempPath(), "OAISISSOFTSCAN.PDF");
+            String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
 
             // Only set absolute minimum parameters, let the postscript input
             // dictate as much as possible
@@ -46,10 +65,13 @@ namespace PdfScribe
                 }
                 GhostScript64.CallAPI(ghostScriptArguments);
             }
-            catch (IOException)
+            catch (IOException ioEx)
             {
                 // We couldn't delete, or create a file
                 // because it was in use
+                ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                              errorDialogInstructionCouldNotWrite,
+                                                                              String.Empty);
             }
             catch (UnauthorizedAccessException)
             {
@@ -57,16 +79,26 @@ namespace PdfScribe
                 // because it was set to readonly
                 // or couldn't create a file
                 // because of permissions issues
+                ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                              errorDialogInstructionCouldNotWrite,
+                                                                              String.Empty);
             }
-            catch (ExternalException)
+            catch (ExternalException ghostscriptEx)
             {
                 // Ghostscript error
+                ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                              errorDialogInstructionPDFGeneration,
+                                                                              String.Format(errorDialogTextGhostScriptConversion, ghostscriptEx.ErrorCode.ToString()));
 
             }
             finally
             {
-                File.Delete(standardInputFilename);
-                CloseActivityNotificationWindow();
+                try
+                {
+                    File.Delete(standardInputFilename);
+                }
+                catch {}
+                userDisplay.CloseActivityNotificationWindow();
             }
         }
 
@@ -77,26 +109,11 @@ namespace PdfScribe
         /// <param name="e"></param>
         static void Application_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            throw new NotImplementedException();
+            ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                          errorDialogInstructionUnexpectedError,
+                                                                          String.Empty);
         }
 
 
-        public static void ShowActivitityNotificationWindow()
-        {
-            var activityWindowThread = new Thread(new ThreadStart(() =>
-            {
-                activityWindow = new Application();
-                activityWindow.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-                activityWindow.Run(new ActivityNotification());
-            }
-            ));
-            activityWindowThread.SetApartmentState(ApartmentState.STA);
-            activityWindowThread.Start();
-        }
-
-        public static void CloseActivityNotificationWindow()
-        {
-            activityWindow.Dispatcher.InvokeShutdown();
-        }
     }
 }
