@@ -243,7 +243,9 @@ namespace PdfScribeCore
         /// <summary>
         /// Disables WOW64 system directory file redirection
         /// if the current process is both
-        /// 32-bit, and running on a 64-bit OS
+        /// 32-bit, and running on a 64-bit OS -
+        /// Compiling for 64-bit OS, and setting the install dir to "ProgramFiles64"
+        /// should ensure this code never runs in production
         /// </summary>
         /// <returns>A Handle, which should be retained to reenable redirection</returns>
         private IntPtr DisableWow64Redirection()
@@ -258,7 +260,9 @@ namespace PdfScribeCore
         /// <summary>
         /// Reenables WOW64 system directory file redirection
         /// if the current process is both
-        /// 32-bit, and running on a 64-bit OS
+        /// 32-bit, and running on a 64-bit OS -
+        /// Compiling for 64-bit OS, and setting the install dir to "ProgramFiles64"
+        /// should ensure this code never runs in production
         /// </summary>
         /// <param name="oldValue">A Handle value - should be retained from call to <see cref="DisableWow64Redirection"/></param>
         private void RevertWow64Redirection(IntPtr oldValue)
