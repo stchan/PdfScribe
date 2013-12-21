@@ -25,8 +25,8 @@ namespace PdfScribe
         /// <param name="instructionText">Instructional text (Appears next to the icon)</param>
         /// <param name="messageText">Smaller message detail text at bottom</param>
         public ErrorDialogPresenter(String captionText,
-                                     String instructionText,
-                                     String messageText)
+                                    String instructionText,
+                                    String messageText)
         {
             ShowSimple(captionText, instructionText, messageText);
         }

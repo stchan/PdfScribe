@@ -127,7 +127,8 @@ namespace PdfScribe
         }
 
         /// <summary>
-        /// All unhandled exceptions will bubble their way up here
+        /// All unhandled exceptions will bubble their way up here -
+        /// a final error dialog will be displayed before the crash and burn
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
