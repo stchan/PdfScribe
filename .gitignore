@@ -4,3 +4,5 @@ obj
 bin
 TestResult.xml
 *.suo
+PdfScribeCore.csproj.user
+PdfScribe.csproj.user
