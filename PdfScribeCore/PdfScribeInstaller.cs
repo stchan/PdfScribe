@@ -77,6 +77,7 @@ namespace PdfScribeCore
         const string NATIVE_COULDNOTENABLE64REDIRECTION = "Could not enable 64-bit file system redirection.";
         const string NATIVE_COULDNOTREVERT64REDIRECTION = "Could not revert 64-bit file system redirection.";
 
+        const string INSTALL_ROLLBACK_FAILURE_AT_FUNCTION = "Partial uninstallation failure. Function {0} returned false.";
         #endregion
 
 
@@ -108,20 +109,38 @@ namespace PdfScribeCore
         #region Port operations
 
 #if DEBUG
-        public int AddPdfScribePort_Test()
+        public bool AddPdfScribePort_Test()
         {
             return AddPdfScribePort();
         }
 #endif
 
-        private int AddPdfScribePort()
+        private bool AddPdfScribePort()
         {
-            return DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "AddPort");
+            bool portAdded = false;
+
+            int portAddResult = DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "AddPort");
+            switch (portAddResult)
+            {
+                case 0:
+                    portAdded = true;
+                    break;
+            }
+            return portAdded;
         }
 
-        public void DeletePdfScribePort()
+        public bool DeletePdfScribePort()
         {
-            DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "DeletePort");
+            bool portDeleted = false;
+
+            int portDeleteResult = DoXcvDataPortOperation(PORTNAME, PORTMONITOR, "DeletePort");
+            switch (portDeleteResult)
+            {
+                case 0:
+                    portDeleted = true;
+                    break;
+            }
+            return portDeleted;
         }
 
         /// <summary>
@@ -130,7 +149,7 @@ namespace PdfScribeCore
         /// <param name="portName"></param>
         /// <param name="xcvDataOperation"></param>
         /// <returns></returns>
-        /// <remarks>I can't remember the name of the developer who wrote this code originally,
+        /// <remarks>I can't remember the name/link of the developer who wrote this code originally,
         /// so I can't provide a link or credit.</remarks>
         private int DoXcvDataPortOperation(string portName, string portMonitor, string xcvDataOperation)
         {
@@ -284,7 +303,16 @@ namespace PdfScribeCore
         {
             bool monitorRemoved = false;
             if ((NativeMethods.DeleteMonitor(null, ENVIRONMENT_64, PORTMONITOR)) != 0)
+            {
                 monitorRemoved = true;
+                // Try to remove the monitor DLL now
+                if (!DeletePdfScribePortMonitorDll())
+                {
+                    logEventSource.TraceEvent(TraceEventType.Warning,
+                                              (int)TraceEventType.Warning,
+                                              "Could not remove port monitor dll.");
+                }
+            }
             return monitorRemoved;
         }
 
@@ -435,17 +463,12 @@ namespace PdfScribeCore
                                                          driverDirectory,
                                                          1024,
                                                          ref dirSizeInBytes))
-                throw new ApplicationException("Could not retrieve printer driver directory.");
+                throw new DirectoryNotFoundException("Could not retrieve printer driver directory.");
             return driverDirectory.ToString();
         }
 
-#if DEBUG
-        public bool InstallSoftscanPrinter_Test()
-        {
-            String driverSourceDirectory = @"C:\Code\PdfScribe\Lib\";
-            return InstallPdfScribePrinter(driverSourceDirectory);
-        }
-#endif
+
+        delegate bool undoInstall();
 
         /// <summary>
         /// Installs the port monitor, port,
@@ -460,24 +483,27 @@ namespace PdfScribeCore
 
             bool printerInstalled = false;
 
+ 
+            Stack<undoInstall> undoInstallActions = new Stack<undoInstall>();
 
             String driverDirectory = RetrievePrinterDriverDirectory();
+            undoInstallActions.Push(this.RemovePdfScribePortMonitor);
             if (AddPdfScribePortMonitor(driverSourceDirectory))
             {
-                
-                //if (CopyPrinterDriverFiles(driverSourceDirectory, driverFilesToCopy.Concat(dependentFilesToCopy).ToArray()))
                 if (CopyPrinterDriverFiles(driverSourceDirectory, printerDriverFiles.Concat(printerDriverDependentFiles).ToArray()))
                 {
-                    if (AddPdfScribePort() == 0)
+                    undoInstallActions.Push(this.RemovePdfScribePortMonitor);
+                    if (AddPdfScribePort())
                     {
+                        undoInstallActions.Push(this.RemovePDFScribePrinterDriver);
                         if (InstallPdfScribePrinterDriver())
                         {
+                            undoInstallActions.Push(this.DeletePdfScribePrinter);
                             if (AddPdfScribePrinter())
                             {
+                                undoInstallActions.Push(this.RemovePdfScribePortConfig);
                                 if (ConfigurePdfScribePort())
-                                {
                                     printerInstalled = true;
-                                }
                                 else
                                 {
                                     // Failed to configure port
@@ -507,6 +533,31 @@ namespace PdfScribeCore
             {
                 //Failed to add port monitor
             }
+            if (printerInstalled == false)
+            {
+                // Printer installation failed -
+                // undo all the install steps
+                while (undoInstallActions.Count > 0)
+                {
+                    undoInstall undoAction = undoInstallActions.Pop();
+                    try
+                    {
+                        if (!undoAction())
+                        {
+                            this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                            (int)TraceEventType.Error,
+                                                            String.Format(INSTALL_ROLLBACK_FAILURE_AT_FUNCTION, undoAction.Method.Name));
+                        }
+                    }
+                    catch (Win32Exception win32Ex)
+                    {
+                        this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                        (int)TraceEventType.Error,
+                                                        String.Format(INSTALL_ROLLBACK_FAILURE_AT_FUNCTION, undoAction.Method.Name) +
+                                                        String.Format(WIN32ERROR, win32Ex.ErrorCode.ToString()));
+                    }
+                }
+            }
             return printerInstalled;
         }
 
@@ -517,13 +568,18 @@ namespace PdfScribeCore
         /// <returns></returns>
         public bool UninstallPdfScribePrinter()
         {
-            bool printerUninstalled = false;
+            bool printerUninstalled = true;
 
-            DeletePdfScribePrinter();
-            RemovePDFScribePrinterDriver();
-            DeletePdfScribePort();
-            RemovePdfScribePortMonitor();
-            RemovePdfScribePortConfig();
+            if (!DeletePdfScribePrinter())
+                printerUninstalled = false;
+            if (!RemovePDFScribePrinterDriver())
+                printerUninstalled = false;
+            if (!DeletePdfScribePort())
+                printerUninstalled = false;
+            if (!RemovePdfScribePortMonitor())
+                printerUninstalled = false;
+            if (!RemovePdfScribePortConfig())
+                printerUninstalled = false;
             return printerUninstalled;
         }
 
@@ -660,18 +716,31 @@ namespace PdfScribeCore
             printerDriverInstalled = NativeMethods.AddPrinterDriver(null, 6, ref printerDriverInfo);
             if (printerDriverInstalled == false)
             {
-                int lastWinError = Marshal.GetLastWin32Error();
-                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add printer PDF Scribe printer driver.");
+                //int lastWinError = Marshal.GetLastWin32Error();
+                //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add printer PDF Scribe printer driver.");
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          "Could add PDF Scribe printer driver." +
+                                          String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return printerDriverInstalled;
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool RemovePDFScribePrinterDriver()
         {
             bool driverRemoved = NativeMethods.DeletePrinterDriverEx(null, ENVIRONMENT_64, DRIVERNAME, DPD_DELETE_UNUSED_FILES, 3);
             if (!driverRemoved)
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not remove PDF Scribe printer driver");
+                //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not remove PDF Scribe printer driver");
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          "Could not remove PDF Scribe printer driver." +
+                                          String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return driverRemoved;
         }
@@ -690,16 +759,20 @@ namespace PdfScribeCore
             pdfScribePrinter.pDatatype = "RAW";
             pdfScribePrinter.Attributes = 0x00000002;
 
-            int softScanPrinterHandle = NativeMethods.AddPrinter(null, 2, ref pdfScribePrinter);
-            if (softScanPrinterHandle != 0)
+            int pdfScribePrinterHandle = NativeMethods.AddPrinter(null, 2, ref pdfScribePrinter);
+            if (pdfScribePrinterHandle != 0)
             {
                 // Added ok
-                int closeCode = NativeMethods.ClosePrinter((IntPtr)softScanPrinterHandle);
+                int closeCode = NativeMethods.ClosePrinter((IntPtr)pdfScribePrinterHandle);
                 printerAdded = true;
             }
             else
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add PDF Scribe virtual printer.");
+                //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add PDF Scribe virtual printer.");
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          "Could not add PDF Scribe virtual printer." + 
+                                          String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return printerAdded;
         }
@@ -723,7 +796,10 @@ namespace PdfScribeCore
                 }
                 else
                 {
-                    // log error
+                    logEventSource.TraceEvent(TraceEventType.Error,
+                                              (int)TraceEventType.Error,
+                                              "Could not delete PDF Scribe virtual printer."  +
+                                              String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
                 }
             }
             finally
@@ -758,9 +834,9 @@ namespace PdfScribeCore
                 portConfiguration.SetValue("Description", "PDF Scribe", RegistryValueKind.String);
                 portConfiguration.SetValue("Command", "", RegistryValueKind.String);
                 portConfiguration.SetValue("Arguments", "", RegistryValueKind.String);
-                portConfiguration.SetValue("Printer", "", RegistryValueKind.String);
+                portConfiguration.SetValue("Printer", PRINTERNAME, RegistryValueKind.String);
                 portConfiguration.SetValue("Output", 0, RegistryValueKind.DWord);
-                portConfiguration.SetValue("ShowWindow", 0, RegistryValueKind.DWord);
+                portConfiguration.SetValue("ShowWindow", 2, RegistryValueKind.DWord);
                 portConfiguration.SetValue("RunUser", 1, RegistryValueKind.DWord);
                 portConfiguration.SetValue("Delay", 300, RegistryValueKind.DWord);
                 portConfiguration.SetValue("LogFileUse", 0, RegistryValueKind.DWord);

@@ -16,9 +16,9 @@ namespace PdfScribe
     /// <summary>
     /// Interaction logic for ActivityNotification.xaml
     /// </summary>
-    public partial class ActivityNotification : Window
+    internal partial class ActivityNotification : Window
     {
-        public ActivityNotification()
+        internal ActivityNotification()
         {
             InitializeComponent();
         }
