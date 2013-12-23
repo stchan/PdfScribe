@@ -34,6 +34,19 @@ namespace PdfScribeUnitTests
         }
 
         //[Test]
+        public void Test_AddPdfScribePort()
+        {
+            var scribeInstaller = new PdfScribeInstaller();
+            scribeInstaller.AddPdfScribePort_Test();
+        }
+
+        [Test]
+        public void Test_IsPrinterDriverInstalled()
+        {
+            var scribeInstaller = new PdfScribeInstaller();
+            scribeInstaller.IsPrinterDriverInstalled_Test("PDF Scribe Virtual Printer");
+        }
+        //[Test]
         public void Test_InstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
@@ -56,7 +69,7 @@ namespace PdfScribeUnitTests
 
         #endregion
 
-        [Test]
+        //[Test]
         public void Test_ShowActivityWindows()
         {
             var activityWindowTester = new PdfScribe.ActivityNotificationPresenter();

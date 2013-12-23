@@ -30,6 +30,7 @@ namespace PdfScribeCore
         const uint DPD_DELETE_SPECIFIC_VERSION = 0x00000002;
         const uint DPD_DELETE_ALL_FILES = 0x00000004;
 
+        const int WIN32_FILE_ALREADY_EXISTS = 183; // Returned by XcvData "AddPort" if the port already exists
         #endregion
 
         //private static readonly TraceSource logEventSource = new TraceSource("PdfScribeCore");
@@ -78,6 +79,10 @@ namespace PdfScribeCore
         const string NATIVE_COULDNOTREVERT64REDIRECTION = "Could not revert 64-bit file system redirection.";
 
         const string INSTALL_ROLLBACK_FAILURE_AT_FUNCTION = "Partial uninstallation failure. Function {0} returned false.";
+
+        const string REGISTRYCONFIG_NOT_ADDED = "Could not add port configuration to registry. Exception message: {0}";
+        const string REGISTRYCONFIG_NOT_DELETED = "Could not delete port configuration from registry. Exception message: {0}";
+
         #endregion
 
 
@@ -123,6 +128,7 @@ namespace PdfScribeCore
             switch (portAddResult)
             {
                 case 0:
+                case WIN32_FILE_ALREADY_EXISTS: // Port already exists - this is OK, we'll just keep using it
                     portAdded = true;
                     break;
             }
@@ -412,6 +418,7 @@ namespace PdfScribeCore
             return monitorExists;
         }
 
+
         public List<MONITOR_INFO_2> EnumerateMonitors()
         {
             List<MONITOR_INFO_2> portMonitors = new List<MONITOR_INFO_2>();
@@ -436,14 +443,14 @@ namespace PdfScribeCore
                 }
                 else
                 {
-                    // Failed to retrieve enumerate
-                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate monitor ports.");
+                    // Failed to retrieve enumerated monitors
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate port monitors.");
                 }
 
             }
             else
             {
-                throw new ApplicationException("Call to EnumMonitors in winspool.drv succeeded with a zero size buffer - unexpected error.");
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Call to EnumMonitors in winspool.drv succeeded with a zero size buffer - unexpected error.");
             }
 
             return portMonitors;
@@ -477,19 +484,19 @@ namespace PdfScribeCore
         /// <param name="driverSourceDirectory">Directory where the uninstalled printer driver files are located</param>
         /// <param name="driverFilesToCopy">An array containing the printer driver's filenames</param>
         /// <param name="dependentFilesToCopy">An array containing dependent filenames</param>
-        /// <returns>true if printer installed, false if failed</returns>
+        /// <returns>true if installation suceeds, false if failed</returns>
         public bool InstallPdfScribePrinter(String driverSourceDirectory)
         {
 
             bool printerInstalled = false;
 
- 
             Stack<undoInstall> undoInstallActions = new Stack<undoInstall>();
 
             String driverDirectory = RetrievePrinterDriverDirectory();
-            undoInstallActions.Push(this.RemovePdfScribePortMonitor);
+            undoInstallActions.Push(this.DeletePdfScribePortMonitorDll);
             if (AddPdfScribePortMonitor(driverSourceDirectory))
             {
+                undoInstallActions.Push(this.RemovePdfScribePortMonitor);
                 if (CopyPrinterDriverFiles(driverSourceDirectory, printerDriverFiles.Concat(printerDriverDependentFiles).ToArray()))
                 {
                     undoInstallActions.Push(this.RemovePdfScribePortMonitor);
@@ -580,6 +587,7 @@ namespace PdfScribeCore
                 printerUninstalled = false;
             if (!RemovePdfScribePortConfig())
                 printerUninstalled = false;
+            DeletePdfScribePortMonitorDll();
             return printerUninstalled;
         }
 
@@ -667,46 +675,111 @@ namespace PdfScribeCore
         }
 
 
-        private bool InstallPdfScribePrinterDriver()
+#if DEBUG
+        public bool IsPrinterDriverInstalled_Test(String driverName)
         {
-
-            String driverSourceDirectory = RetrievePrinterDriverDirectory();
-
-            StringBuilder nullTerminatedDependentFiles = new StringBuilder();
-            if (printerDriverDependentFiles.Length > 0)
+            return IsPrinterDriverInstalled(driverName);
+        }
+#endif
+        private bool IsPrinterDriverInstalled(String driverName)
+        {
+            bool driverInstalled = false;
+            List<DRIVER_INFO_6> installedDrivers = EnumeratePrinterDrivers();
+            foreach (DRIVER_INFO_6 printerDriver in installedDrivers)
             {
-                for (int loop = 0; loop <= printerDriverDependentFiles.GetUpperBound(0); loop++)
+                if (printerDriver.pName == driverName)
                 {
-                    nullTerminatedDependentFiles.Append(printerDriverDependentFiles[loop]);
-                    nullTerminatedDependentFiles.Append("\0");
+                    driverInstalled = true;
+                    break;
                 }
-                nullTerminatedDependentFiles.Append("\0");
+            }
+            return driverInstalled;
+        }
+
+        public List<DRIVER_INFO_6> EnumeratePrinterDrivers()
+        {
+            List<DRIVER_INFO_6> installedPrinterDrivers = new List<DRIVER_INFO_6>();
+
+            uint pcbNeeded = 0;
+            uint pcReturned = 0;
+
+            if (!NativeMethods.EnumPrinterDrivers(null, ENVIRONMENT_64, 6, IntPtr.Zero, 0, ref pcbNeeded, ref pcReturned))
+            {
+                IntPtr pDrivers = Marshal.AllocHGlobal((int)pcbNeeded);
+                if (NativeMethods.EnumPrinterDrivers(null, ENVIRONMENT_64, 6, pDrivers, pcbNeeded, ref pcbNeeded, ref pcReturned))
+                {
+                    IntPtr currentDriver = pDrivers;
+                    for (int loop = 0; loop < pcReturned; loop++)
+                    {
+                        installedPrinterDrivers.Add((DRIVER_INFO_6)Marshal.PtrToStructure(currentDriver, typeof(DRIVER_INFO_6)));
+                        currentDriver = (IntPtr)(currentDriver.ToInt32() + Marshal.SizeOf(typeof(DRIVER_INFO_6)));
+                    }
+                    Marshal.FreeHGlobal(pDrivers);
+                }
+                else
+                {
+                    // Failed to enumerate printer drivers
+                    throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate printer drivers.");
+                }
             }
             else
             {
-                nullTerminatedDependentFiles.Append("\0\0");
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Call to EnumPrinterDrivers in winspool.drv succeeded with a zero size buffer - unexpected error.");
             }
 
-            DRIVER_INFO_6 printerDriverInfo = new DRIVER_INFO_6();
+            return installedPrinterDrivers;
+        }
 
-            printerDriverInfo.cVersion = 3;
-            printerDriverInfo.pName = DRIVERNAME;
-            printerDriverInfo.pEnvironment = ENVIRONMENT_64;
-            printerDriverInfo.pDriverPath = Path.Combine(driverSourceDirectory, DRIVERFILE);
-            printerDriverInfo.pConfigFile = Path.Combine(driverSourceDirectory, DRIVERUIFILE);
-            printerDriverInfo.pHelpFile = Path.Combine(driverSourceDirectory, DRIVERHELPFILE);
-            printerDriverInfo.pDataFile = Path.Combine(driverSourceDirectory, DRIVERDATAFILE);
-            printerDriverInfo.pDependentFiles = nullTerminatedDependentFiles.ToString();
+        private bool InstallPdfScribePrinterDriver()
+        {
+            bool pdfScribePrinterDriverInstalled = false;
 
-            printerDriverInfo.pMonitorName = PORTMONITOR;
-            printerDriverInfo.pDefaultDataType = String.Empty;
-            printerDriverInfo.dwlDriverVersion = 0x0000000200000000U;
-            printerDriverInfo.pszMfgName = DRIVERMANUFACTURER;
-            printerDriverInfo.pszHardwareID = HARDWAREID;
-            printerDriverInfo.pszProvider = DRIVERMANUFACTURER;
+            if (IsPrinterDriverInstalled(DRIVERNAME))
+            {
+                String driverSourceDirectory = RetrievePrinterDriverDirectory();
+
+                StringBuilder nullTerminatedDependentFiles = new StringBuilder();
+                if (printerDriverDependentFiles.Length > 0)
+                {
+                    for (int loop = 0; loop <= printerDriverDependentFiles.GetUpperBound(0); loop++)
+                    {
+                        nullTerminatedDependentFiles.Append(printerDriverDependentFiles[loop]);
+                        nullTerminatedDependentFiles.Append("\0");
+                    }
+                    nullTerminatedDependentFiles.Append("\0");
+                }
+                else
+                {
+                    nullTerminatedDependentFiles.Append("\0\0");
+                }
+
+                DRIVER_INFO_6 printerDriverInfo = new DRIVER_INFO_6();
+
+                printerDriverInfo.cVersion = 3;
+                printerDriverInfo.pName = DRIVERNAME;
+                printerDriverInfo.pEnvironment = ENVIRONMENT_64;
+                printerDriverInfo.pDriverPath = Path.Combine(driverSourceDirectory, DRIVERFILE);
+                printerDriverInfo.pConfigFile = Path.Combine(driverSourceDirectory, DRIVERUIFILE);
+                printerDriverInfo.pHelpFile = Path.Combine(driverSourceDirectory, DRIVERHELPFILE);
+                printerDriverInfo.pDataFile = Path.Combine(driverSourceDirectory, DRIVERDATAFILE);
+                printerDriverInfo.pDependentFiles = nullTerminatedDependentFiles.ToString();
+
+                printerDriverInfo.pMonitorName = PORTMONITOR;
+                printerDriverInfo.pDefaultDataType = String.Empty;
+                printerDriverInfo.dwlDriverVersion = 0x0000000200000000U;
+                printerDriverInfo.pszMfgName = DRIVERMANUFACTURER;
+                printerDriverInfo.pszHardwareID = HARDWAREID;
+                printerDriverInfo.pszProvider = DRIVERMANUFACTURER;
 
 
-            return InstallPrinterDriver(ref printerDriverInfo);
+                pdfScribePrinterDriverInstalled = InstallPrinterDriver(ref printerDriverInfo);
+            }
+            else
+            {
+                pdfScribePrinterDriverInstalled = true; // Driver is already installed, we'll just use the installed driver
+            }
+
+            return pdfScribePrinterDriverInstalled;
         }
 
         private bool InstallPrinterDriver(ref DRIVER_INFO_6 printerDriverInfo)
@@ -808,7 +881,36 @@ namespace PdfScribeCore
             }
             return printerDeleted;
         }
+
+
+        public bool IsPdfScribePrinterInstalled()
+        {
+            bool pdfScribeInstalled = false;
+
+            PRINTER_DEFAULTS scribeDefaults = new PRINTER_DEFAULTS();
+            scribeDefaults.DesiredAccess = 0x00008; // Use access
+            scribeDefaults.pDatatype = null;
+            scribeDefaults.pDevMode = IntPtr.Zero;
+
+            IntPtr scribeHandle = IntPtr.Zero;
+            if (NativeMethods.OpenPrinter(PRINTERNAME, ref scribeHandle, scribeDefaults) != 0)
+            {
+                pdfScribeInstalled = true;
+            }
+            else
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                if (errorCode == 0x5) pdfScribeInstalled = true; // Printer is installed, but user
+                                                                 // has no privileges to use it
+            }
+
+            return pdfScribeInstalled;
+        }
+
         #endregion
+
+
+
 
 
         #region Configuration and Registry changes
@@ -822,6 +924,12 @@ namespace PdfScribeCore
 
         private bool ConfigurePdfScribePort()
         {
+            return ConfigurePdfScribePort(String.Empty, String.Empty);
+
+        }
+        private bool ConfigurePdfScribePort(String commandValue,
+                                            String argumentsValue)
+        {
             bool registryChangesMade = false;
             // Add all the registry info
             // for the port and monitor
@@ -832,8 +940,8 @@ namespace PdfScribeCore
                                                                                 PORTMONITOR +
                                                                                 "\\Ports\\" + PORTNAME);
                 portConfiguration.SetValue("Description", "PDF Scribe", RegistryValueKind.String);
-                portConfiguration.SetValue("Command", "", RegistryValueKind.String);
-                portConfiguration.SetValue("Arguments", "", RegistryValueKind.String);
+                portConfiguration.SetValue("Command", commandValue, RegistryValueKind.String);
+                portConfiguration.SetValue("Arguments", argumentsValue, RegistryValueKind.String);
                 portConfiguration.SetValue("Printer", PRINTERNAME, RegistryValueKind.String);
                 portConfiguration.SetValue("Output", 0, RegistryValueKind.DWord);
                 portConfiguration.SetValue("ShowWindow", 2, RegistryValueKind.DWord);
@@ -846,10 +954,18 @@ namespace PdfScribeCore
                 registryChangesMade = true;
             }
 
-            catch (UnauthorizedAccessException)
-            { }
-            catch (SecurityException)
-            { }
+            catch (UnauthorizedAccessException unauthorizedEx)
+            {
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          String.Format(REGISTRYCONFIG_NOT_ADDED, unauthorizedEx.Message));
+            }
+            catch (SecurityException securityEx)
+            {
+                logEventSource.TraceEvent(TraceEventType.Error,
+                            (int)TraceEventType.Error,
+                            String.Format(REGISTRYCONFIG_NOT_ADDED, securityEx.Message));
+            }
 
             return registryChangesMade;
         }
@@ -864,8 +980,12 @@ namespace PdfScribeCore
                                                     PORTMONITOR + "\\Ports\\" + PORTNAME, false);
                 registryEntriesRemoved = true;
             }
-            catch (UnauthorizedAccessException)
-            { }
+            catch (UnauthorizedAccessException unauthorizedEx)
+            {
+                logEventSource.TraceEvent(TraceEventType.Error,
+                                          (int)TraceEventType.Error,
+                                          String.Format(REGISTRYCONFIG_NOT_DELETED, unauthorizedEx.Message));
+            }
 
             return registryEntriesRemoved;
 

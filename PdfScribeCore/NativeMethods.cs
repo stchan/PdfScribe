@@ -28,6 +28,23 @@ namespace PdfScribeCore
         public UInt32 dwHighDateTime;
     }
 
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    public struct DRIVER_INFO_2
+    {
+        public uint cVersion;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pName;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pEnvironment;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pDriverPath;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pDataFile;
+        [MarshalAs(UnmanagedType.LPTStr)]
+        public string pConfigFile;
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct DRIVER_INFO_6
     {
@@ -146,6 +163,10 @@ namespace PdfScribeCore
         internal static extern bool AddPrinterDriver(String pName,
                                                    int Level,
                                                    ref DRIVER_INFO_6 pDriverInfo);
+
+        [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern bool EnumPrinterDrivers(String pName, String pEnvironment, uint level, IntPtr pDriverInfo, uint cdBuf, ref uint pcbNeeded, ref uint pcReturned);
+
 
         [DllImport("winspool.drv")]
         internal static extern bool GetPrinterDriverDirectory(StringBuilder pName,
