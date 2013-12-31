@@ -50,7 +50,7 @@ namespace PdfScribeUnitTests
         public void Test_InstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
-            scribeInstaller.InstallPdfScribePrinter(@"C:\Code\PdfScribe\Lib\");
+            scribeInstaller.InstallPdfScribePrinter(@"C:\Code\PdfScribe\Lib\", String.Empty, String.Empty);
         }
 
         //[Test]

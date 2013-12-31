@@ -493,7 +493,9 @@ namespace PdfScribeCore
         /// <param name="driverFilesToCopy">An array containing the printer driver's filenames</param>
         /// <param name="dependentFilesToCopy">An array containing dependent filenames</param>
         /// <returns>true if installation suceeds, false if failed</returns>
-        public bool InstallPdfScribePrinter(String driverSourceDirectory)
+        public bool InstallPdfScribePrinter(String driverSourceDirectory,
+                                            String outputHandlerCommand,
+                                            String outputHandlerArguments)
         {
 
             bool printerInstalled = false;
@@ -518,7 +520,7 @@ namespace PdfScribeCore
                             if (AddPdfScribePrinter())
                             {
                                 undoInstallActions.Push(this.RemovePdfScribePortConfig);
-                                if (ConfigurePdfScribePort())
+                                if (ConfigurePdfScribePort(outputHandlerCommand, outputHandlerArguments))
                                     printerInstalled = true;
                                 else
                                     // Failed to configure port
@@ -945,6 +947,8 @@ namespace PdfScribeCore
             return ConfigurePdfScribePort(String.Empty, String.Empty);
 
         }
+
+        
         private bool ConfigurePdfScribePort(String commandValue,
                                             String argumentsValue)
         {
