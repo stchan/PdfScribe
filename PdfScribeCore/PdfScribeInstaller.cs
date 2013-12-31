@@ -72,6 +72,7 @@ namespace PdfScribeCore
         const string FILENOTDELETED_UNAUTHORIZED = "{0} is read-only, or its file permissions do not allow for deletion.";
 
         const string FILENOTCOPIED_PRINTERDRIVER = "Printer driver file was not copied. Exception message: {0}";
+        const string FILENOTCOPIED_ALREADYEXISTS = "Destination file {0} was not copied/created - it already exists.";
 
         const string WIN32ERROR = "Win32 error code {0}.";
 
@@ -82,6 +83,13 @@ namespace PdfScribeCore
 
         const string REGISTRYCONFIG_NOT_ADDED = "Could not add port configuration to registry. Exception message: {0}";
         const string REGISTRYCONFIG_NOT_DELETED = "Could not delete port configuration from registry. Exception message: {0}";
+
+        const String INFO_INSTALLPORTMONITOR_FAILED = "Port monitor installation failed.";
+        const String INFO_INSTALLCOPYDRIVER_FAILED = "Could not copy printer driver files.";
+        const String INFO_INSTALLPORT_FAILED = "Could not add redirected port.";
+        const String INFO_INSTALLPRINTERDRIVER_FAILED = "Printer driver installation failed.";
+        const String INFO_INSTALLPRINTER_FAILED = "Could not add printer.";
+        const String INFO_INSTALLCONFIGPORT_FAILED = "Port configuration failed.";
 
         #endregion
 
@@ -490,6 +498,7 @@ namespace PdfScribeCore
 
             bool printerInstalled = false;
 
+
             Stack<undoInstall> undoInstallActions = new Stack<undoInstall>();
 
             String driverDirectory = RetrievePrinterDriverDirectory();
@@ -512,34 +521,40 @@ namespace PdfScribeCore
                                 if (ConfigurePdfScribePort())
                                     printerInstalled = true;
                                 else
-                                {
                                     // Failed to configure port
-                                }
+                                    this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                                    (int)TraceEventType.Error,
+                                                                    INFO_INSTALLCONFIGPORT_FAILED);
                             }
                             else
-                            {
                                 // Failed to install printer
-                            }
+                                this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                                (int)TraceEventType.Error,
+                                                                INFO_INSTALLPRINTER_FAILED);
                         }
                         else
-                        {
                             // Failed to install printer driver
-                        }
+                            this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                            (int)TraceEventType.Error,
+                                                            INFO_INSTALLPRINTERDRIVER_FAILED);
                     }
                     else
-                    {
                         // Failed to add printer port
-                    }
+                        this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                        (int)TraceEventType.Error,
+                                                        INFO_INSTALLPORT_FAILED);
                 }
                 else
-                {
                     //Failed to copy printer driver files
-                }
+                    this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                    (int)TraceEventType.Error,
+                                                    INFO_INSTALLCOPYDRIVER_FAILED);
             }
             else
-            {
                 //Failed to add port monitor
-            }
+                this.logEventSource.TraceEvent(TraceEventType.Error,
+                                                (int)TraceEventType.Error,
+                                                INFO_INSTALLPORTMONITOR_FAILED);
             if (printerInstalled == false)
             {
                 // Printer installation failed -
@@ -575,20 +590,20 @@ namespace PdfScribeCore
         /// <returns></returns>
         public bool UninstallPdfScribePrinter()
         {
-            bool printerUninstalled = true;
+            bool printerUninstalledCleanly = true;
 
             if (!DeletePdfScribePrinter())
-                printerUninstalled = false;
+                printerUninstalledCleanly = false;
             if (!RemovePDFScribePrinterDriver())
-                printerUninstalled = false;
+                printerUninstalledCleanly = false;
             if (!DeletePdfScribePort())
-                printerUninstalled = false;
+                printerUninstalledCleanly = false;
             if (!RemovePdfScribePortMonitor())
-                printerUninstalled = false;
+                printerUninstalledCleanly = false;
             if (!RemovePdfScribePortConfig())
-                printerUninstalled = false;
+                printerUninstalledCleanly = false;
             DeletePdfScribePortMonitorDll();
-            return printerUninstalled;
+            return printerUninstalledCleanly;
         }
 
         private bool CopyPrinterDriverFiles(String driverSourceDirectory,
@@ -628,6 +643,9 @@ namespace PdfScribeCore
                     {
                         // Just keep going - file was already there
                         // Not really a problem
+                        logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                  (int)TraceEventType.Verbose,
+                                                  String.Format(FILENOTCOPIED_ALREADYEXISTS, fileDestinationPath));
                         continue;
                     }
                 }
