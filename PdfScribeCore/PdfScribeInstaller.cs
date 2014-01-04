@@ -93,12 +93,18 @@ namespace PdfScribeCore
 
         #endregion
 
+        public void AddTraceListener(TraceListener additionalListener)
+        {
+            this.logEventSource.Listeners.Add(additionalListener);
+        }
 
         #region Constructors
 
         public PdfScribeInstaller()
         {
             this.logEventSource = new TraceSource(logEventSourceNameDefault);
+            this.logEventSource.Switch = new SourceSwitch("PdfScribeCoreSwitch");
+            this.logEventSource.Switch.Level = SourceLevels.All;
         }
         /// <summary>
         /// This override sets the
@@ -115,6 +121,8 @@ namespace PdfScribeCore
             {
                 throw new ArgumentNullException("eventSourceName");
             }
+            this.logEventSource.Switch = new SourceSwitch("PdfScribeCoreSwitch");
+            this.logEventSource.Switch.Level = SourceLevels.All;
         }
 
         #endregion
@@ -507,21 +515,41 @@ namespace PdfScribeCore
             undoInstallActions.Push(this.DeletePdfScribePortMonitorDll);
             if (AddPdfScribePortMonitor(driverSourceDirectory))
             {
+                this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                               (int)TraceEventType.Verbose,
+                                               "Port monitor successfully installed.");
                 undoInstallActions.Push(this.RemovePdfScribePortMonitor);
                 if (CopyPrinterDriverFiles(driverSourceDirectory, printerDriverFiles.Concat(printerDriverDependentFiles).ToArray()))
                 {
+                    this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                   (int)TraceEventType.Verbose,
+                                                   "Printer drivers copied or already exist.");
                     undoInstallActions.Push(this.RemovePdfScribePortMonitor);
                     if (AddPdfScribePort())
                     {
+                        this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                       (int)TraceEventType.Verbose,
+                                                       "Redirection port added.");
                         undoInstallActions.Push(this.RemovePDFScribePrinterDriver);
                         if (InstallPdfScribePrinterDriver())
                         {
+                            this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                           (int)TraceEventType.Verbose,
+                                                           "Printer driver installed.");
                             undoInstallActions.Push(this.DeletePdfScribePrinter);
                             if (AddPdfScribePrinter())
                             {
+                                this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                               (int)TraceEventType.Verbose,
+                                                               "Virtual printer installed.");
                                 undoInstallActions.Push(this.RemovePdfScribePortConfig);
                                 if (ConfigurePdfScribePort(outputHandlerCommand, outputHandlerArguments))
+                                {
+                                    this.logEventSource.TraceEvent(TraceEventType.Verbose,
+                                                                   (int)TraceEventType.Verbose,
+                                                                   "Printer configured.");
                                     printerInstalled = true;
+                                }
                                 else
                                     // Failed to configure port
                                     this.logEventSource.TraceEvent(TraceEventType.Error,
@@ -582,6 +610,7 @@ namespace PdfScribeCore
                     }
                 }
             }
+            this.logEventSource.Flush();
             return printerInstalled;
         }
 
@@ -754,7 +783,7 @@ namespace PdfScribeCore
         {
             bool pdfScribePrinterDriverInstalled = false;
 
-            if (IsPrinterDriverInstalled(DRIVERNAME))
+            if (!IsPrinterDriverInstalled(DRIVERNAME))
             {
                 String driverSourceDirectory = RetrievePrinterDriverDirectory();
 

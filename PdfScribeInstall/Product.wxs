@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Pdf Scribe" Language="1033" Version="1.0.0.0" Manufacturer="S T Chan" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+		<Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" 
+             InstallPrivileges="elevated" 
+             Description="PDF Scribe Virtual Printer"
+             Comments="PDF Scribe Virtual Printer 1.0.0 installation package"/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Feature Id="ProductFeature" Title="PdfScribe" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+
+    <!-- .Net 4.0 Prerequisite -->
+    <PropertyRef Id="NETFRAMEWORK40FULL"/>
+    <Condition Message="This application requires .NET Framework 4.0. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
+    </Condition>
+    <!-- Check if the user has administrator privileges -->
+    <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
+
+    <!-- Custom Actions -->
+    <Binary Id="PdfScribeInstallCustomAction.CA.dll" SourceFile="PrimaryOutputHarvest\PdfScribeInstallCustomAction.CA.dll" />
+    <CustomAction Id="SetCustomActionDataValues"
+                  Return="check"
+                  Property="InstallPrinter"
+                  Value="DriverSourceDirectory=[INSTALLFOLDER];OutputCommand=[INSTALLFOLDER]PdfScribe.exe;OutputCommandArguments=" />
+                  
+    <CustomAction Id="InstallPrinter"
+                  Return="check"
+                  Execute="deferred"
+                  BinaryKey="PdfScribeInstallCustomAction.CA.dll"
+                  DllEntry="InstallPdfScribePrinter" Impersonate="no"  />
+    <CustomAction Id="UninstallPrinter"
+                  Return="ignore"
+                  Execute="deferred"
+                  BinaryKey="PdfScribeInstallCustomAction.CA.dll"
+                  DllEntry="UninstallPdfScribePrinter" Impersonate="no" />
+
+    <InstallExecuteSequence>
+      <Custom Action="SetCustomActionDataValues" After="InstallFiles" >NOT Installed</Custom>
+      <Custom Action="InstallPrinter" After="SetCustomActionDataValues"  >NOT Installed</Custom>
+      <Custom Action="UninstallPrinter" Before="RemoveFiles" >Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+    </InstallExecuteSequence>
+  </Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="INSTALLFOLDER" Name="PdfScribe" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			<!-- <Component Id="ProductComponent"> -->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+      <Component Id="PdfScribeBase" Guid="{7A339C63-AEA3-491C-8CB1-C78D21426EC1}">
+        <File Source="PrimaryOutputHarvest\PdfScribeInstallCustomAction.CA.dll" />
+        <File Id="PdfScribeCoreDll" Source="PrimaryOutputHarvest\PdfScribeCore.dll" />
+        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" />
+        <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" />
+        <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" />
+        
+        <!-- Third party components -->
+        <File Source="..\Lib\gsdll64.dll" />
+        <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" />
+        <File Source="..\Lib\Microsoft.WindowsAPICodePack.pdb" />
+        <File Source="..\Lib\redmon64pdfscribe.dll" />
+        <File Source="..\Lib\PS5UI.DLL" />
+        <File Source="..\Lib\PSCRIPT.HLP" />
+        <File Source="..\Lib\PSCRIPT.NTF" />
+        <File Source="..\Lib\PSCRIPT5.DLL" />
+        <File Source="..\Lib\SCPDFPRN.ppd" />
+
+
+      </Component>
+			<!-- </Component> -->
+		</ComponentGroup>
+	</Fragment>
+</Wix>
