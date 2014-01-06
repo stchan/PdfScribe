@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="Pdf Scribe" Language="1033" Version="1.0.0.0" Manufacturer="S T Chan" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
+	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.0.0.0" Manufacturer="S T Chan" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" 
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
@@ -10,7 +10,7 @@
     <MediaTemplate EmbedCab="yes"/>
 
     <Feature Id="ProductFeature" Title="PdfScribe" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
+			<ComponentGroupRef Id="ProductComponents"  />
 		</Feature>
 
 
@@ -33,7 +33,7 @@
                   Return="check"
                   Execute="deferred"
                   BinaryKey="PdfScribeInstallCustomAction.CA.dll"
-                  DllEntry="InstallPdfScribePrinter" Impersonate="no"  />
+                  DllEntry="InstallPdfScribePrinter" Impersonate="no"   />
     <CustomAction Id="UninstallPrinter"
                   Return="ignore"
                   Execute="deferred"
@@ -61,12 +61,16 @@
 			<!-- <Component Id="ProductComponent"> -->
 				<!-- TODO: Insert files, registry keys, and other resources here. -->
       <Component Id="PdfScribeBase" Guid="{7A339C63-AEA3-491C-8CB1-C78D21426EC1}">
-        <File Source="PrimaryOutputHarvest\PdfScribeInstallCustomAction.CA.dll" />
-        <File Id="PdfScribeCoreDll" Source="PrimaryOutputHarvest\PdfScribeCore.dll" />
+        <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" >
+          <netfx:NativeImage Id="PdfScribe.exe" Platform="64bit" Priority="1"   />
+        </File>
         <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" />
         <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" />
-        <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" />
-        
+
+        <File Id="PdfScribeCoreDll" Source="PrimaryOutputHarvest\PdfScribeCore.dll"  >
+          <netfx:NativeImage Id="PdfScribeCore.dll" Platform="64bit" Priority="1"   />
+        </File>
+
         <!-- Third party components -->
         <File Source="..\Lib\gsdll64.dll" />
         <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" />
