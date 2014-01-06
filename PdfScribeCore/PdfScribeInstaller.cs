@@ -98,14 +98,16 @@ namespace PdfScribeCore
             this.logEventSource.Listeners.Add(additionalListener);
         }
 
+        
         #region Constructors
 
         public PdfScribeInstaller()
         {
             this.logEventSource = new TraceSource(logEventSourceNameDefault);
-            this.logEventSource.Switch = new SourceSwitch("PdfScribeCoreSwitch");
+            this.logEventSource.Switch = new SourceSwitch("PdfScribeCoreAll");
             this.logEventSource.Switch.Level = SourceLevels.All;
         }
+        /*
         /// <summary>
         /// This override sets the
         /// trace source to a specific name
@@ -124,7 +126,7 @@ namespace PdfScribeCore
             this.logEventSource.Switch = new SourceSwitch("PdfScribeCoreSwitch");
             this.logEventSource.Switch.Level = SourceLevels.All;
         }
-
+        */
         #endregion
 
         #region Port operations

@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="CustomAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionWriterTraceListener.cs" />
     <Content Include="CustomAction.config" />
   </ItemGroup>
   <ItemGroup>

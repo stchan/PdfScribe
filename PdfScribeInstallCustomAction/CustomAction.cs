@@ -24,7 +24,7 @@ namespace PdfScribeInstallCustomAction
         {
             ActionResult resultCode;
             TextWriterTraceListener installTraceListener = new TextWriterTraceListener("C:\\testout.txt");
-            PdfScribeInstaller installer = new PdfScribeInstaller(traceSourceName);
+            PdfScribeInstaller installer = new PdfScribeInstaller();
             installer.AddTraceListener(installTraceListener);
             if (installer.IsPdfScribePrinterInstalled())
                 resultCode = ActionResult.Success;
@@ -44,24 +44,28 @@ namespace PdfScribeInstallCustomAction
             String outputCommand = session.CustomActionData["OutputCommand"];
             String outputCommandArguments = session.CustomActionData["OutputCommandArguments"];
 
-            TextWriterTraceListener installTraceListener = new TextWriterTraceListener("C:\\testout.txt");
-            installTraceListener.TraceOutputOptions = TraceOptions.Timestamp;
+            SessionLogWriterTraceListener installTraceListener = new SessionLogWriterTraceListener(session);
+            installTraceListener.TraceOutputOptions = TraceOptions.DateTime;
 
-            PdfScribeInstaller installer = new PdfScribeInstaller(traceSourceName);
-
+            PdfScribeInstaller installer = new PdfScribeInstaller();
             installer.AddTraceListener(installTraceListener);
+            try
+            {
 
 
-            if (installer.InstallPdfScribePrinter(driverSourceDirectory,
-                                              outputCommand,
-                                              outputCommandArguments))
-                printerInstalled = ActionResult.Success;
-            else
-                printerInstalled = ActionResult.Failure;
+                if (installer.InstallPdfScribePrinter(driverSourceDirectory,
+                                                      outputCommand,
+                                                      outputCommandArguments))
+                    printerInstalled = ActionResult.Success;
+                else
+                    printerInstalled = ActionResult.Failure;
 
-            installTraceListener.Flush();
-            installTraceListener.Close();
-
+                installTraceListener.CloseAndWriteLog();
+            }
+            finally
+            {
+                if (installTraceListener != null) installTraceListener.Dispose();
+            }
             return printerInstalled;
         }
 
@@ -71,7 +75,7 @@ namespace PdfScribeInstallCustomAction
         {
             ActionResult printerUninstalled;
 
-            PdfScribeInstaller installer = new PdfScribeInstaller(traceSourceName);
+            PdfScribeInstaller installer = new PdfScribeInstaller();
             if (installer.UninstallPdfScribePrinter())
                 printerUninstalled = ActionResult.Success;
             else
