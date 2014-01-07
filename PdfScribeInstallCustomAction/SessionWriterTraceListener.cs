@@ -28,11 +28,12 @@ namespace PdfScribeInstallCustomAction
 
         /// <summary>
         /// Releases resources held by the listener -
-        /// Note will not automatically flush and write
-        /// trace data to the install session -
+        /// will not automatically flush and write
+        /// trace data to the install session log -
         /// call CloseAndWriteLog() before disposing
+        /// to ensure data is written
         /// </summary>
-        public void Dispose()
+        public new void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -70,7 +71,7 @@ namespace PdfScribeInstallCustomAction
         /// <summary>
         /// Closes the listener and writes accumulated
         /// trace data to the install session's log (Session.Log)
-        /// The listener will no longer be usable after calling
+        /// The listener should not be used after calling
         /// this method, and should be disposed of.
         /// </summary>
         public void CloseAndWriteLog()
@@ -79,7 +80,6 @@ namespace PdfScribeInstallCustomAction
                 this.installSession != null)
             {
                 this.Flush();
-                this.Close();
                 if (this.listenerStream.Length > 0)
                 {
                     listenerStream.Position = 0;
@@ -88,7 +88,9 @@ namespace PdfScribeInstallCustomAction
                         this.installSession.Log(listenerStreamReader.ReadToEnd());
                     }
                 }
+                this.Close();
                 this.Dispose();
+                this.installSession = null;
             }
         }
     }
