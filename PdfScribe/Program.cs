@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
+using PdfScribeCore;
+
 namespace PdfScribe
 {
     public class Program

@@ -100,7 +100,6 @@
       <DependentUpon>ActivityNotification.xaml</DependentUpon>
     </Compile>
     <Compile Include="ActivityNotificationPresenter.cs" />
-    <Compile Include="ErrorDialogPresenter.cs" />
     <Compile Include="GhostScript64.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
@@ -143,6 +142,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PdfScribeCore\PdfScribeCore.csproj">
+      <Project>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</Project>
+      <Name>PdfScribeCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
