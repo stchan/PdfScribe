@@ -127,6 +127,8 @@ namespace PdfScribe
         }
 
         /// <summary>
+        /// http://stackoverflow.com/questions/8047610/re-open-wpf-window-from-a-console-application
+        /// 
         /// All unhandled exceptions will bubble their way up here -
         /// a final error dialog will be displayed before the crash and burn
         /// </summary>
