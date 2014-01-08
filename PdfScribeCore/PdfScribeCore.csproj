@@ -86,6 +86,8 @@
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\Lib\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -99,6 +101,7 @@
     <Compile Include="..\Common\PdfScribeSharedAssemblyInfo.cs">
       <Link>PdfScribeSharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ErrorDialogPresenter.cs" />
     <Compile Include="TaskDialogPresenter.cs" />
     <Compile Include="PdfScribeInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

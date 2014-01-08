@@ -8,10 +8,28 @@ using APICodePack = Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace PdfScribeCore
 {
-    abstract class TaskDialogPresenter
+    public abstract class TaskDialogPresenter
     {
 
         protected abstract APICodePack.TaskDialogStandardIcon DefaultTaskIcon { get; } // Override this to set the dialog icon you want
+
+
+        public TaskDialogPresenter()
+        { }
+
+        /// <summary>
+        /// Ctor that shows the
+        /// task dialog immediately
+        /// </summary>
+        /// <param name="captionText">Text that goes in the window caption</param>
+        /// <param name="instructionText">Instructional text (Appears next to the icon)</param>
+        /// <param name="messageText">Smaller message detail text at bottom</param>
+        public TaskDialogPresenter(String captionText,
+                                        String instructionText,
+                                        String messageText)
+        {
+            ShowSimple(captionText, instructionText, messageText);
+        }
 
         /// <summary>
         /// Pops up a simple TaskDialog box

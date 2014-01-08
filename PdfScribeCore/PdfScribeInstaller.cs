@@ -624,6 +624,7 @@ namespace PdfScribeCore
         public bool UninstallPdfScribePrinter()
         {
             bool printerUninstalledCleanly = true;
+            ErrorDialogPresenter test = new ErrorDialogPresenter();
 
             if (!DeletePdfScribePrinter())
                 printerUninstalledCleanly = false;

@@ -55,7 +55,7 @@ namespace PdfScribeUnitTests
             scribeInstaller.InstallPdfScribePrinter(@"C:\Code\PdfScribe\Lib\", String.Empty, String.Empty);
         }
 
-        [Test]
+        //[Test]
         public void Test_UninstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
@@ -71,19 +71,20 @@ namespace PdfScribeUnitTests
 
         #endregion
 
-        //[Test]
+        [Test]
         public void Test_ShowActivityWindows()
         {
             var activityWindowTester = new PdfScribe.ActivityNotificationPresenter();
             activityWindowTester.ShowActivityNotificationWindow();
-            Thread.Sleep(20000);
+            //Thread.Sleep(20000);
+            //activityWindowTester.ShowErrorDialog();
             activityWindowTester.CloseActivityNotificationWindow();
         }
         
         //[Test]
         public void Test_ShowSimpleError()
         {
-            var errorDialog = new PdfScribe.ErrorDialogPresenter("Error Caption", "Error Instructions", "Message text");
+            var errorDialog = new PdfScribeCore.ErrorDialogPresenter("Error Caption", "Error Instructions", "Message text");
         }
 
 #endif

@@ -35,9 +35,9 @@ namespace PdfScribe
         {
             if (this.activityWindowApp == null)
             {
+                activityWindowApp = new Application();
                 var activityWindowThread = new Thread(new ThreadStart(() =>
                 {
-                    activityWindowApp = new Application();
                     activityWindow = new ActivityNotification();
                     activityWindowApp.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                     activityWindowApp.Run(activityWindow);
