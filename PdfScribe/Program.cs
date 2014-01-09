@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Windows;
 
 using PdfScribeCore;
 
@@ -38,7 +39,8 @@ namespace PdfScribe
 
         #endregion
 
-        static ActivityNotificationPresenter userDisplay = new ActivityNotificationPresenter();
+        static Application guiApplication = null;        
+        static ActivityNotificationPresenter userDisplay;
         static TraceSource logEventSource = new TraceSource(traceSourceName);
 
         [STAThread]
@@ -46,8 +48,13 @@ namespace PdfScribe
         {
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
+
+            // Setup and start the WPF application that will
+            // handle Windows and other displayables
+            LaunchApplication();
+            userDisplay = new ActivityNotificationPresenter(guiApplication);
             userDisplay.ShowActivityNotificationWindow();
-            Thread.Sleep(3000);
+            //Thread.Sleep(20000);
 
             String standardInputFilename = Path.GetTempFileName();
             String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
@@ -125,6 +132,7 @@ namespace PdfScribe
                                               String.Format(warnFileNotDeleted, standardInputFilename));
                 }
                 userDisplay.CloseActivityNotificationWindow();
+                ShutdownApplication();
             }
         }
 
@@ -140,12 +148,51 @@ namespace PdfScribe
         {
             logEventSource.TraceEvent(TraceEventType.Critical,
                                       (int)TraceEventType.Critical,
-                                      ((Exception)e.ExceptionObject).Message);
+                                      ((Exception)e.ExceptionObject).Message + Environment.NewLine +
+                                                                        ((Exception)e.ExceptionObject).StackTrace);
             ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
                                                                         errorDialogInstructionUnexpectedError,
-                                                                        String.Empty);
+                                                                        ((Exception)e.ExceptionObject).Message + 
+                                                                        Environment.NewLine +
+                                                                        ((Exception)e.ExceptionObject).StackTrace);
         }
 
+        static void LaunchApplication()
+        {
 
+            if (guiApplication == null)
+            {
+                guiApplication = new Application();
+                var guiApplicationThread = new Thread(new ThreadStart(() =>
+                                {
+                                    guiApplication.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                                    guiApplication.Run();
+                                }
+                            ));
+                guiApplicationThread.SetApartmentState(ApartmentState.STA);
+                guiApplicationThread.Start();
+            }
+        }
+
+        static void ShutdownApplication()
+        {
+            if (guiApplication != null)
+            {
+                guiApplication.Dispatcher.Invoke((Action)delegate()
+                    {
+                        if (guiApplication.Windows != null && guiApplication.Windows.Count > 0)
+                        {
+                            foreach (Window appWindow in guiApplication.Windows)
+                            {
+                                appWindow.Close();
+                            }
+                        }
+
+                    }
+                );
+                guiApplication.Dispatcher.InvokeShutdown();
+                guiApplication = null;
+            }
+        }
     }
 }
