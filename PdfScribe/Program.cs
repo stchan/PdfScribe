@@ -54,7 +54,8 @@ namespace PdfScribe
             LaunchApplication();
             userDisplay = new ActivityNotificationPresenter(guiApplication);
             userDisplay.ShowActivityNotificationWindow();
-            //Thread.Sleep(20000);
+            Thread.Sleep(10000);
+            //LaunchActivityNotification();
 
             String standardInputFilename = Path.GetTempFileName();
             String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
@@ -131,7 +132,7 @@ namespace PdfScribe
                                               (int)TraceEventType.Warning,
                                               String.Format(warnFileNotDeleted, standardInputFilename));
                 }
-                userDisplay.CloseActivityNotificationWindow();
+                if (userDisplay != null) userDisplay.CloseActivityNotificationWindow();
                 ShutdownApplication();
             }
         }
@@ -157,6 +158,19 @@ namespace PdfScribe
                                                                         ((Exception)e.ExceptionObject).StackTrace);
         }
 
+        static void LaunchActivityNotification()
+        {
+            if (guiApplication != null)
+            {
+                guiApplication.Dispatcher.Invoke((Action)delegate()
+                    {
+                        ActivityNotificationPresenter notificationPresenter = new ActivityNotificationPresenter();
+                        notificationPresenter.ShowActivityNotificationWindow();
+                    }
+                );
+            }
+        }
+
         static void LaunchApplication()
         {
 
@@ -170,6 +184,7 @@ namespace PdfScribe
                                 }
                             ));
                 guiApplicationThread.SetApartmentState(ApartmentState.STA);
+                guiApplicationThread.IsBackground = true;
                 guiApplicationThread.Start();
             }
         }
@@ -191,7 +206,7 @@ namespace PdfScribe
                     }
                 );
                 guiApplication.Dispatcher.InvokeShutdown();
-                guiApplication = null;
+                //guiApplication.Shutdown();
             }
         }
     }

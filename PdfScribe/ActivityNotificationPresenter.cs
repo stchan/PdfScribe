@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,11 +15,11 @@ namespace PdfScribe
         public ActivityNotificationPresenter(Application guiApplication)
         {
             this.activityWindowApp = guiApplication;
+            this.activityWindow = new ActivityNotification();
             this.progressTimer = new SysTimers.Timer();
             this.progressTimer.Enabled = false;
             this.progressTimer.Interval = 250; // Quarter second is default
             this.progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
-            this.activityWindow = new ActivityNotification();
             /*
             if (guiApplication.Dispatcher.CheckAccess())
             {
@@ -29,22 +30,26 @@ namespace PdfScribe
                 guiApplication.Dispatcher.Invoke((Action)delegate()
                                                     {
                                                         this.activityWindow = new ActivityNotification();
-                                                        progressTimer = new SysTimers.Timer();
-                                                        progressTimer.Enabled = false;
-                                                        progressTimer.Interval = 250; // Quarter second is default
-                                                        progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
                                                     }
                                                 );
             }
              */ 
         }
 
+        public ActivityNotificationPresenter()
+        {
+            this.progressTimer = new SysTimers.Timer();
+            this.progressTimer.Enabled = false;
+            this.progressTimer.Interval = 250; // Quarter second is default
+            this.progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
+            this.activityWindow = new ActivityNotification();
+        }
 
         
         private Application activityWindowApp;
         private ActivityNotification activityWindow = null;
         private SysTimers.Timer progressTimer;
-        readonly String progressString = "CAPTURING";
+        private readonly String progressString = "CAPTURING";
 
         /// <summary>
         /// Displays the floating frameless
@@ -55,19 +60,21 @@ namespace PdfScribe
         {
             if (this.activityWindow != null)
             {
+
                 if (this.activityWindow.Dispatcher.CheckAccess())
                 {
                     this.activityWindow.Show();
+                    this.progressTimer.Start();
                 }
                 else
                 {
                     this.activityWindow.Dispatcher.Invoke((Action)delegate()
                                                                 {
                                                                     this.activityWindow.Show();
+                                                                    this.progressTimer.Start();
                                                                 }
-                                                             );
+                                                                );
                 }
-                this.progressTimer.Start();
             }
         }
         
@@ -97,7 +104,8 @@ namespace PdfScribe
         /// </summary>
         public void CloseActivityNotificationWindow()
         {
-            this.progressTimer.Enabled = false;
+            //this.progressTimer.Elapsed -= new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
+            this.progressTimer.Stop();
             if (this.activityWindow != null)
             {
                 if (this.activityWindow.Dispatcher.CheckAccess())
@@ -114,7 +122,6 @@ namespace PdfScribe
                 }
                 this.activityWindow = null;
             }
-
             /*
             if (activityWindowApp != null)
             {
@@ -139,9 +146,10 @@ namespace PdfScribe
 
 
         private int progressCounter = 0;
+        static Object timerElapsedLock = new Object();
         private void progressTimer_Elapsed(object sender, SysTimers.ElapsedEventArgs e)
         {
-            ((SysTimers.Timer)sender).Enabled = false;
+            ((SysTimers.Timer)sender).Stop();
             if (activityWindow != null)
             {
                 if (this.progressCounter >= progressString.Length)
@@ -149,19 +157,22 @@ namespace PdfScribe
 
                 if (activityWindow.labelProgress.Dispatcher.CheckAccess())
                 {
-                    activityWindow.labelProgress.Content = progressString.Substring(0, progressCounter + 1);
+                    EventLog.WriteEntry("PdfScribe", "Timer_No_Invoke");
+                    this.activityWindow.labelProgress.Content = this.progressString.Substring(0, progressCounter + 1);
                 }
                 else
                 {
-                    activityWindow.labelProgress.Dispatcher.Invoke((Action)delegate()
+                    EventLog.WriteEntry("PdfScribe", "Timer_Invoke");
+                    this.activityWindow.labelProgress.Dispatcher.BeginInvoke((Action)delegate()
                                                                         {
-                                                                            activityWindow.labelProgress.Content = progressString.Substring(0, progressCounter + 1);
+                                                                            this.activityWindow.labelProgress.Content = this.progressString.Substring(0, progressCounter + 1);
                                                                         }
                                                                     );
+                    EventLog.WriteEntry("PdfScribe", "Timer_Invoked");
                 }
                 progressCounter++;
-                ((SysTimers.Timer)sender).Enabled = true;
             }
+            ((SysTimers.Timer)sender).Start();
         }
 
     }

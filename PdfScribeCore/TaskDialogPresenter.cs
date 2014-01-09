@@ -51,6 +51,7 @@ namespace PdfScribeCore
                 simpleTaskDialog.Icon = this.DefaultTaskIcon;
                 simpleTaskDialog.StandardButtons = APICodePack.TaskDialogStandardButtons.Close;
                 simpleTaskDialog.Opened += new EventHandler(simpleTaskDialog_Opened);
+                simpleTaskDialog.StartupLocation = APICodePack.TaskDialogStartupLocation.CenterScreen;
                 simpleTaskDialog.Show();
             }
         }
