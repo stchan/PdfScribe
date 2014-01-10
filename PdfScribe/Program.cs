@@ -39,8 +39,9 @@ namespace PdfScribe
 
         #endregion
 
-        static Application guiApplication = null;        
-        static ActivityNotificationPresenter userDisplay;
+        static Application guiApplication = null;
+        static Dispatcher guiDispatcher = null;
+        static ActivityNotificationPresenter activityNotification = null;
         static TraceSource logEventSource = new TraceSource(traceSourceName);
 
         [STAThread]
@@ -90,13 +91,14 @@ namespace PdfScribe
                                                                             errorDialogInstructionCouldNotWrite,
                                                                             String.Format("{0} is in use.", outputFilename));*/
 
-                DispatchToGUIApp((Action)delegate()
-                {
-                    ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
-                                                                            errorDialogInstructionCouldNotWrite,
-                                                                            String.Format("{0} is in use.", outputFilename));
-                }
-                );
+                DispatchToGUIApp(
+                    (Action)delegate()
+                        {
+                            ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                                        errorDialogInstructionCouldNotWrite,
+                                                                                        String.Format("{0} is in use.", outputFilename));
+                        }
+                    );
             }
             catch (UnauthorizedAccessException unauthorizedEx)
             {
@@ -138,7 +140,7 @@ namespace PdfScribe
                                               (int)TraceEventType.Warning,
                                               String.Format(warnFileNotDeleted, standardInputFilename));
                 }
-                ShutdownApplication();
+                //ShutdownApplication();
             }
         }
 
@@ -165,12 +167,11 @@ namespace PdfScribe
         {
             if (guiApplication != null)
             {
-                guiApplication.Dispatcher.Invoke((Action)delegate()
+                DispatchToGUIApp((Action)delegate()
                     {
-                        //ActivityNotificationPresenter notificationPresenter = new ActivityNotificationPresenter();
-                        //notificationPresenter.ShowActivityNotificationWindow();
-                        ActivityNotification testWindow = new ActivityNotification();
-                        testWindow.Show();
+                        ActivityNotificationPresenter notificationPresenter = new ActivityNotificationPresenter();
+                        notificationPresenter.ShowActivityNotificationWindow();
+                        System.Windows.Threading.Dispatcher.Run();
                     }
                 );
             }
@@ -185,6 +186,8 @@ namespace PdfScribe
                                 {
                                     guiApplication = new Application();
                                     guiApplication.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                                    activityNotification = new ActivityNotificationPresenter();
+                                    activityNotification.ShowActivityNotificationWindow();
                                     guiApplication.Run();
                                 }
                             ));
@@ -198,7 +201,14 @@ namespace PdfScribe
         {
             if (guiApplication != null)
             {
-                guiApplication.Dispatcher.Invoke(guiAction);
+                if (guiApplication.Dispatcher.Thread != System.Windows.Threading.Dispatcher.CurrentDispatcher.Thread)
+                {
+                    guiApplication.Dispatcher.Invoke(guiAction);
+                }
+                else
+                {
+                    guiAction.Invoke();
+                }
             }
         }
 
@@ -206,6 +216,16 @@ namespace PdfScribe
         {
             if (guiApplication != null)
             {
+                if (guiApplication.Windows != null && guiApplication.Windows.Count > 0)
+                {
+                    foreach (Window appWindow in guiApplication.Windows)
+                    {
+                        appWindow.Close();
+                    }
+                }
+                guiApplication.Shutdown();
+                guiApplication = null;
+                /*
                 guiApplication.Dispatcher.Invoke((Action)delegate()
                     {
                         if (guiApplication.Windows != null && guiApplication.Windows.Count > 0)
@@ -220,7 +240,7 @@ namespace PdfScribe
 
                     }
                 );
-                
+                */
                 //guiApplication.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Send);
                 //guiApplication.Shutdown();
                 //guiApplication = null;

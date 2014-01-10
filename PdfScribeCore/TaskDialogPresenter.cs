@@ -53,6 +53,7 @@ namespace PdfScribeCore
                 simpleTaskDialog.Opened += new EventHandler(simpleTaskDialog_Opened);
                 simpleTaskDialog.StartupLocation = APICodePack.TaskDialogStartupLocation.CenterScreen;
                 simpleTaskDialog.Show();
+                //System.Windows.Threading.Dispatcher.Run();
             }
         }
 
@@ -67,6 +68,7 @@ namespace PdfScribeCore
             // someone else fixes first - also why isn't the API Code pack on codeplex
             // or github so people can push patches), but until then...
             ((APICodePack.TaskDialog)sender).Icon = this.DefaultTaskIcon;
+            
         }
 
     }

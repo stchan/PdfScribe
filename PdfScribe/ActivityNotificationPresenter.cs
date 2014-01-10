@@ -19,11 +19,10 @@ namespace PdfScribe
             this.progressTimer.Enabled = false;
             this.progressTimer.Interval = 250; // Quarter second is default
             this.progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
-            //this.activityWindow = new ActivityNotification();
+            this.activityWindow = new ActivityNotification();
         }
 
         
-        private Application activityWindowApp;
         private ActivityNotification activityWindow = null;
         private SysTimers.Timer progressTimer;
         private readonly String progressString = "CAPTURING";
@@ -35,6 +34,12 @@ namespace PdfScribe
         /// </summary>
         public void ShowActivityNotificationWindow()
         {
+            if (this.activityWindow != null)
+            {
+                this.activityWindow.Show();
+                this.progressTimer.Start();
+            }            
+            /*
             if (this.activityWindow == null)
             {
 
@@ -55,6 +60,7 @@ namespace PdfScribe
                                                                 );
                 }
             }
+             */ 
         }
         
         /*
@@ -87,6 +93,7 @@ namespace PdfScribe
             this.progressTimer.Stop();
             if (this.activityWindow != null)
             {
+                /*
                 if (this.activityWindow.Dispatcher.CheckAccess())
                 {
                     this.activityWindow.Close();
@@ -98,7 +105,8 @@ namespace PdfScribe
                                                                 this.activityWindow.Close();
                                                             }
                     );
-                }
+                }*/
+                this.activityWindow.Close();
                 this.activityWindow = null;
             }
             /*
@@ -133,7 +141,8 @@ namespace PdfScribe
             {
                 if (this.progressCounter >= progressString.Length)
                     this.progressCounter = 0;
-
+                this.activityWindow.labelProgress.Content = this.progressString.Substring(0, progressCounter + 1);
+                /*
                 if (activityWindow.labelProgress.Dispatcher.CheckAccess())
                 {
                     //EventLog.WriteEntry("PdfScribe", "Timer_No_Invoke");
@@ -149,6 +158,7 @@ namespace PdfScribe
                                                                     );
                     //EventLog.WriteEntry("PdfScribe", "Timer_Invoked");
                 }
+                 */ 
                 progressCounter++;
             }
             ((SysTimers.Timer)sender).Start();
