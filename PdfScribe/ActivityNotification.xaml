@@ -2,7 +2,7 @@
         x:ClassModifier="internal"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ActivityNotification" Height="300" Width="300" 
+        Title="PDF Scribe" Height="300" Width="300" 
         AllowsTransparency="True"
         WindowStyle="None"
         Background="Transparent"

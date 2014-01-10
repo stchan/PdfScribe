@@ -12,29 +12,6 @@ namespace PdfScribe
 {
     public class ActivityNotificationPresenter
     {
-        public ActivityNotificationPresenter(Application guiApplication)
-        {
-            this.activityWindowApp = guiApplication;
-            this.activityWindow = new ActivityNotification();
-            this.progressTimer = new SysTimers.Timer();
-            this.progressTimer.Enabled = false;
-            this.progressTimer.Interval = 250; // Quarter second is default
-            this.progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
-            /*
-            if (guiApplication.Dispatcher.CheckAccess())
-            {
-                this.activityWindow = new ActivityNotification();
-            }
-            else
-            {
-                guiApplication.Dispatcher.Invoke((Action)delegate()
-                                                    {
-                                                        this.activityWindow = new ActivityNotification();
-                                                    }
-                                                );
-            }
-             */ 
-        }
 
         public ActivityNotificationPresenter()
         {
@@ -42,7 +19,7 @@ namespace PdfScribe
             this.progressTimer.Enabled = false;
             this.progressTimer.Interval = 250; // Quarter second is default
             this.progressTimer.Elapsed += new SysTimers.ElapsedEventHandler(progressTimer_Elapsed);
-            this.activityWindow = new ActivityNotification();
+            //this.activityWindow = new ActivityNotification();
         }
 
         
@@ -58,11 +35,12 @@ namespace PdfScribe
         /// </summary>
         public void ShowActivityNotificationWindow()
         {
-            if (this.activityWindow != null)
+            if (this.activityWindow == null)
             {
 
                 if (this.activityWindow.Dispatcher.CheckAccess())
                 {
+                    this.activityWindow = new ActivityNotification();
                     this.activityWindow.Show();
                     this.progressTimer.Start();
                 }
@@ -70,6 +48,7 @@ namespace PdfScribe
                 {
                     this.activityWindow.Dispatcher.Invoke((Action)delegate()
                                                                 {
+                                                                    this.activityWindow = new ActivityNotification();
                                                                     this.activityWindow.Show();
                                                                     this.progressTimer.Start();
                                                                 }
@@ -157,18 +136,18 @@ namespace PdfScribe
 
                 if (activityWindow.labelProgress.Dispatcher.CheckAccess())
                 {
-                    EventLog.WriteEntry("PdfScribe", "Timer_No_Invoke");
+                    //EventLog.WriteEntry("PdfScribe", "Timer_No_Invoke");
                     this.activityWindow.labelProgress.Content = this.progressString.Substring(0, progressCounter + 1);
                 }
                 else
                 {
-                    EventLog.WriteEntry("PdfScribe", "Timer_Invoke");
-                    this.activityWindow.labelProgress.Dispatcher.BeginInvoke((Action)delegate()
+                    //EventLog.WriteEntry("PdfScribe", "Timer_Invoke");
+                    this.activityWindow.labelProgress.Dispatcher.Invoke((Action)delegate()
                                                                         {
                                                                             this.activityWindow.labelProgress.Content = this.progressString.Substring(0, progressCounter + 1);
                                                                         }
                                                                     );
-                    EventLog.WriteEntry("PdfScribe", "Timer_Invoked");
+                    //EventLog.WriteEntry("PdfScribe", "Timer_Invoked");
                 }
                 progressCounter++;
             }

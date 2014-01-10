@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
-
+using System.Windows.Threading;
 using PdfScribeCore;
 
 namespace PdfScribe
@@ -23,7 +23,7 @@ namespace PdfScribe
         
         const string errorDialogInstructionPDFGeneration = "There was a PDF generation error.";
         const string errorDialogInstructionCouldNotWrite = "Could not create the output file.";
-        const string errorDialogInstructionUnexpectedError = "There was an unexpected, and unhandled error in PDF Scribe.";
+        const string errorDialogInstructionUnexpectedError = "There was an unhandled error in PDF Scribe. Enable tracing for details.";
 
         const string errorDialogTextFileInUse = "{0} is being used by another process.";
         const string errorDialogTextGhostScriptConversion = "Ghostscript error code {0}.";
@@ -49,13 +49,11 @@ namespace PdfScribe
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
 
-            // Setup and start the WPF application that will
-            // handle Windows and other displayables
+            //Dispatcher.Run();
             LaunchApplication();
-            userDisplay = new ActivityNotificationPresenter(guiApplication);
-            userDisplay.ShowActivityNotificationWindow();
-            Thread.Sleep(10000);
             //LaunchActivityNotification();
+
+            //Thread.Sleep(10000);
 
             String standardInputFilename = Path.GetTempFileName();
             String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
@@ -88,9 +86,17 @@ namespace PdfScribe
                                           errorDialogInstructionCouldNotWrite +
                                           Environment.NewLine +
                                           "Exception message: " + ioEx.Message);
-                ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                /*ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
                                                                             errorDialogInstructionCouldNotWrite,
-                                                                            String.Empty);
+                                                                            String.Format("{0} is in use.", outputFilename));*/
+
+                DispatchToGUIApp((Action)delegate()
+                {
+                    ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
+                                                                            errorDialogInstructionCouldNotWrite,
+                                                                            String.Format("{0} is in use.", outputFilename));
+                }
+                );
             }
             catch (UnauthorizedAccessException unauthorizedEx)
             {
@@ -105,7 +111,7 @@ namespace PdfScribe
                                           "Exception message: " + unauthorizedEx.Message);
                 ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
                                                                             errorDialogInstructionCouldNotWrite,
-                                                                            String.Empty);
+                                                                            String.Format("Insufficient privileges to either create or delete {0}", outputFilename));
             }
             catch (ExternalException ghostscriptEx)
             {
@@ -132,7 +138,6 @@ namespace PdfScribe
                                               (int)TraceEventType.Warning,
                                               String.Format(warnFileNotDeleted, standardInputFilename));
                 }
-                if (userDisplay != null) userDisplay.CloseActivityNotificationWindow();
                 ShutdownApplication();
             }
         }
@@ -153,9 +158,7 @@ namespace PdfScribe
                                                                         ((Exception)e.ExceptionObject).StackTrace);
             ErrorDialogPresenter errorDialog = new ErrorDialogPresenter(errorDialogCaption,
                                                                         errorDialogInstructionUnexpectedError,
-                                                                        ((Exception)e.ExceptionObject).Message + 
-                                                                        Environment.NewLine +
-                                                                        ((Exception)e.ExceptionObject).StackTrace);
+                                                                        String.Empty);
         }
 
         static void LaunchActivityNotification()
@@ -164,8 +167,10 @@ namespace PdfScribe
             {
                 guiApplication.Dispatcher.Invoke((Action)delegate()
                     {
-                        ActivityNotificationPresenter notificationPresenter = new ActivityNotificationPresenter();
-                        notificationPresenter.ShowActivityNotificationWindow();
+                        //ActivityNotificationPresenter notificationPresenter = new ActivityNotificationPresenter();
+                        //notificationPresenter.ShowActivityNotificationWindow();
+                        ActivityNotification testWindow = new ActivityNotification();
+                        testWindow.Show();
                     }
                 );
             }
@@ -176,9 +181,9 @@ namespace PdfScribe
 
             if (guiApplication == null)
             {
-                guiApplication = new Application();
                 var guiApplicationThread = new Thread(new ThreadStart(() =>
                                 {
+                                    guiApplication = new Application();
                                     guiApplication.ShutdownMode = ShutdownMode.OnExplicitShutdown;
                                     guiApplication.Run();
                                 }
@@ -186,6 +191,14 @@ namespace PdfScribe
                 guiApplicationThread.SetApartmentState(ApartmentState.STA);
                 guiApplicationThread.IsBackground = true;
                 guiApplicationThread.Start();
+            }
+        }
+
+        static void DispatchToGUIApp(Action guiAction)
+        {
+            if (guiApplication != null)
+            {
+                guiApplication.Dispatcher.Invoke(guiAction);
             }
         }
 
@@ -202,11 +215,15 @@ namespace PdfScribe
                                 appWindow.Close();
                             }
                         }
+                        guiApplication.Shutdown();
+                        //guiApplication.Dispatcher.InvokeShutdown();
 
                     }
                 );
-                guiApplication.Dispatcher.InvokeShutdown();
+                
+                //guiApplication.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Send);
                 //guiApplication.Shutdown();
+                //guiApplication = null;
             }
         }
     }
