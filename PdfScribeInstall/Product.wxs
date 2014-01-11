@@ -64,12 +64,13 @@
         <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" >
           <netfx:NativeImage Id="PdfScribe.exe" Platform="64bit" Priority="1"   />
         </File>
-        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" />
+        <File Source="PrimaryOutputHarvest\PdfScribe.pdb" />
         <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" />
 
         <File Id="PdfScribeCoreDll" Source="PrimaryOutputHarvest\PdfScribeCore.dll"  >
           <netfx:NativeImage Id="PdfScribeCore.dll" Platform="64bit" Priority="1"   />
         </File>
+        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" />
 
         <!-- Third party components -->
         <File Source="..\Lib\gsdll64.dll" />

@@ -74,12 +74,14 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\AdobeIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\Lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -88,18 +90,11 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\PdfScribeSharedAssemblyInfo.cs">
       <Link>PdfScribeSharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActivityNotification.xaml.cs">
-      <DependentUpon>ActivityNotification.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ActivityNotificationPresenter.cs" />
     <Compile Include="GhostScript64.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
@@ -129,25 +124,11 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\Common\Adobe_CreatePDF_icon.png">
-      <Link>Adobe_CreatePDF_icon.png</Link>
-    </Resource>
+    <None Include="Resources\AdobeIcon.ico" />
     <Content Include="..\Lib\gsdll64.dll">
       <Link>gsdll64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ActivityNotification.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PdfScribeCore\PdfScribeCore.csproj">
-      <Project>{1EAD8E9A-A123-4C37-B31E-AEE1354DF003}</Project>
-      <Name>PdfScribeCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

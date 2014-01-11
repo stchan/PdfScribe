@@ -59,5 +59,12 @@ namespace PdfScribe.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Icon AdobeIcon {
+            get {
+                object obj = ResourceManager.GetObject("AdobeIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

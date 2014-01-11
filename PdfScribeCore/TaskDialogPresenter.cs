@@ -53,7 +53,6 @@ namespace PdfScribeCore
                 simpleTaskDialog.Opened += new EventHandler(simpleTaskDialog_Opened);
                 simpleTaskDialog.StartupLocation = APICodePack.TaskDialogStartupLocation.CenterScreen;
                 simpleTaskDialog.Show();
-                //System.Windows.Threading.Dispatcher.Run();
             }
         }
 
