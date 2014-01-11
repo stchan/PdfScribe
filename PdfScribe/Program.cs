@@ -143,10 +143,10 @@ namespace PdfScribe
         }
 
         /// <summary>
-        /// Pops up a topmost, OK-only message box for the error message
+        /// Displays up a topmost, OK-only message box for the error message
         /// </summary>
-        /// <param name="boxCaption">The message box's caption</param>
-        /// <param name="boxMessage"></param>
+        /// <param name="boxCaption">The box's caption</param>
+        /// <param name="boxMessage">The box's message</param>
         static void DisplayErrorMessage(String boxCaption,
                                         String boxMessage)
         {
