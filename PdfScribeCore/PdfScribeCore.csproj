@@ -101,8 +101,6 @@
     <Compile Include="..\Common\PdfScribeSharedAssemblyInfo.cs">
       <Link>PdfScribeSharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ErrorDialogPresenter.cs" />
-    <Compile Include="TaskDialogPresenter.cs" />
     <Compile Include="PdfScribeInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeMethods.cs" />

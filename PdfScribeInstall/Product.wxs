@@ -9,6 +9,9 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes"/>
 
+    <Icon Id="AdobeIcon.ico" SourceFile="..\Common\AdobeIcon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="AdobeIcon.ico" />
+    
     <Feature Id="ProductFeature" Title="PdfScribe" Level="1">
 			<ComponentGroupRef Id="ProductComponents"  />
 		</Feature>

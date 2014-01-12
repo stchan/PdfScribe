@@ -123,6 +123,7 @@ namespace PdfScribe
                                               (int)TraceEventType.Warning,
                                               String.Format(warnFileNotDeleted, standardInputFilename));
                 }
+                logEventSource.Flush();
             }
         }
 
