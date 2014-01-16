@@ -32,7 +32,7 @@ namespace PdfScribe
         #region Other constants
         const string traceSourceName = "PdfScribe";
 
-        const string defaultOutputFilename = "OAISISSOFTSCAN.PDF";
+        const string defaultOutputFilename = "PDFSCRIBE.PDF";
 
         #endregion
 
@@ -143,6 +143,12 @@ namespace PdfScribe
                                 errorDialogInstructionUnexpectedError);
         }
 
+
+        static String GetOutputFilename()
+        {
+
+            return String.Empty;
+        }
         /// <summary>
         /// Displays up a topmost, OK-only message box for the error message
         /// </summary>
