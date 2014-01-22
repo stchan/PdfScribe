@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
@@ -147,6 +148,23 @@ namespace PdfScribe
         static String GetOutputFilename()
         {
 
+            String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
+
+            if (!Properties.Settings.Default.AskUserForOutputFilename)
+            {
+                if (Directory.Exists(Path.GetFullPath(Properties.Settings.Default.OutputFile)))
+                {
+                    if (
+                }
+
+
+
+
+            }
+            else
+            {
+
+            }
             return String.Empty;
         }
         /// <summary>
