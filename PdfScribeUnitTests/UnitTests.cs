@@ -71,22 +71,13 @@ namespace PdfScribeUnitTests
 
         #endregion
 
-        [Test]
-        public void Test_ShowActivityWindows()
-        {
-            var activityWindowTester = new PdfScribe.ActivityNotificationPresenter();
-            activityWindowTester.ShowActivityNotificationWindow();
-            //Thread.Sleep(20000);
-            //activityWindowTester.ShowErrorDialog();
-            activityWindowTester.CloseActivityNotificationWindow();
-        }
-        
+        /*        
         //[Test]
         public void Test_ShowSimpleError()
         {
             var errorDialog = new PdfScribeCore.ErrorDialogPresenter("Error Caption", "Error Instructions", "Message text");
         }
-
+        */
 #endif
     }
 }

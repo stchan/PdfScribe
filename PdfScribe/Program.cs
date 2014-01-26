@@ -42,24 +42,15 @@ namespace PdfScribe
         [STAThread]
         static void Main(string[] args)
         {
-
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
 
 
             String standardInputFilename = Path.GetTempFileName();
-            String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
-
-            // Only set absolute minimum parameters, let the postscript input
-            // dictate as much as possible
-            String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
-                                              String.Format("-sOutputFile={0}", outputFilename), standardInputFilename };
+            String outputFilename = String.Empty;
 
             try
             {
-                // Remove the existing OAISISSOFTSCAN.PDF file if present
-                File.Delete(outputFilename);
-
                 using (BinaryReader standardInputReader = new BinaryReader(Console.OpenStandardInput()))
                 {
                     using (FileStream standardInputFile = new FileStream(standardInputFilename, FileMode.Create, FileAccess.ReadWrite))
@@ -67,7 +58,18 @@ namespace PdfScribe
                         standardInputReader.BaseStream.CopyTo(standardInputFile);
                     }
                 }
-                GhostScript64.CallAPI(ghostScriptArguments);
+
+                if (GetPdfOutputFilename(ref outputFilename))
+                {
+                    // Remove the existing PDF file if present
+                    File.Delete(outputFilename);
+                    // Only set absolute minimum parameters, let the postscript input
+                    // dictate as much as possible
+                    String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
+                                                String.Format("-sOutputFile={0}", outputFilename), standardInputFilename };
+
+                    GhostScript64.CallAPI(ghostScriptArguments);
+                }
             }
             catch (IOException ioEx)
             {
@@ -144,29 +146,101 @@ namespace PdfScribe
                                 errorDialogInstructionUnexpectedError);
         }
 
+        static bool GetPdfOutputFilename(ref String outputFile)
+        {
+            bool filenameRetrieved = false;
+            switch (Properties.Settings.Default.AskUserForOutputFilename)
+            {
+                case (true) :
+                    using (SetOutputFilename dialogOwner = new SetOutputFilename())
+                    {
+                        dialogOwner.TopMost = true;
+                        dialogOwner.TopLevel = true;
+                        dialogOwner.Show(); // Form won't actually show - Application.Run() never called
+                                            // but having a topmost/toplevel owner lets us bring the SaveFileDialog to the front
+                        dialogOwner.BringToFront();
+                        using (SaveFileDialog pdfFilenameDialog = new SaveFileDialog())
+                        {
+                            pdfFilenameDialog.AddExtension = true;
+                            pdfFilenameDialog.AutoUpgradeEnabled = true;
+                            pdfFilenameDialog.CheckPathExists = true;
+                            pdfFilenameDialog.Filter = "pdf files (*.pdf)|*.pdf";
+                            pdfFilenameDialog.ShowHelp = false;
+                            pdfFilenameDialog.Title = "PDF Scribe - Set output filename";
+                            pdfFilenameDialog.ValidateNames = true;
+                            if (pdfFilenameDialog.ShowDialog(dialogOwner) == DialogResult.OK)
+                            {
+                                outputFile = pdfFilenameDialog.FileName;
+                                filenameRetrieved = true;
+                            }
+                        }
+                        dialogOwner.Close();
+                    }
+                    break;
+                default:
+                    outputFile = GetOutputFilename();
+                    filenameRetrieved = true;
+                    break;
+            }
+            return filenameRetrieved;
 
-        static String GetOutputFilename()
+        }
+
+        private static String GetOutputFilename()
         {
 
-            String outputFilename = Path.Combine(Path.GetTempPath(), defaultOutputFilename);
-
-            if (!Properties.Settings.Default.AskUserForOutputFilename)
+            String outputFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), defaultOutputFilename);
+            if (!String.IsNullOrEmpty(Properties.Settings.Default.OutputFile) &&
+                !String.IsNullOrWhiteSpace(Properties.Settings.Default.OutputFile))
             {
-                if (Directory.Exists(Path.GetFullPath(Properties.Settings.Default.OutputFile)))
+                if (IsFilePathValid(Properties.Settings.Default.OutputFile))
                 {
-                    if (
+                    outputFilename = Properties.Settings.Default.OutputFile;
                 }
-
-
-
-
+                else
+                {
+                    if (IsFilePathValid(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.OutputFile)))
+                    {
+                        outputFilename = Environment.ExpandEnvironmentVariables(Properties.Settings.Default.OutputFile);
+                    }
+                }
             }
             else
             {
-
+                logEventSource.TraceEvent(TraceEventType.Warning,
+                                          (int)TraceEventType.Warning,
+                                          String.Format("Using default output filename {0}",
+                                                        outputFilename));
             }
-            return String.Empty;
+            return outputFilename;
         }
+
+        static bool IsFilePathValid(String filePath)
+        {
+            bool pathIsValid = false;
+
+            if (!String.IsNullOrEmpty(filePath) && filePath.Length <= 260)
+            {
+                String directoryName = Path.GetDirectoryName(filePath);
+                String filename = Path.GetFileName(filePath);
+
+                if (Directory.Exists(directoryName))
+                {
+                    // Check for invalid filename chars
+                    Regex containsABadCharacter = new Regex("["
+                                                    + Regex.Escape(new String(System.IO.Path.GetInvalidPathChars())) + "]");
+                    pathIsValid = !containsABadCharacter.IsMatch(filename);
+                }
+            }
+            else
+            {
+                logEventSource.TraceEvent(TraceEventType.Warning,
+                                          (int)TraceEventType.Warning,
+                                          "Output filename is longer than 260 characters, or blank.");
+            }
+            return pathIsValid;
+        }
+
         /// <summary>
         /// Displays up a topmost, OK-only message box for the error message
         /// </summary>
