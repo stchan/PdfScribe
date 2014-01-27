@@ -2,6 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.0.0.0" Manufacturer="S T Chan" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" 
+             Platform="x64"
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
              Comments="PDF Scribe Virtual Printer 1.0.0 installation package"/>
@@ -22,6 +23,9 @@
     <Condition Message="This application requires .NET Framework 4.0. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
     </Condition>
+    <!-- OS version prerequisite -->
+    <Condition Message="64-bit Windows Vista SP2, Server 2008 SP2, or later are required."><![CDATA[Installed OR ((VersionNT >= 600 AND ServicePackLevel >= 2 AND VersionNT64)
+                                                                                                              OR (VersionNT >= 601 AND VersionNT64))]]></Condition>    
     <!-- Check if the user has administrator privileges -->
     <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
@@ -48,6 +52,11 @@
       <Custom Action="InstallPrinter" After="SetCustomActionDataValues"  >NOT Installed</Custom>
       <Custom Action="UninstallPrinter" Before="RemoveFiles" >Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </InstallExecuteSequence>
+
+    <!-- Use the UI that allows an install directory to be chosen-->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\Common\gpl-3.0.rtf" />
+    <UIRef Id="WixUI_InstallDir" />
   </Product>
 
 	<Fragment>
