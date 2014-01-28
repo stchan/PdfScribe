@@ -69,9 +69,13 @@
 
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			<!-- We copy everything from the PrimaryOutputHarvest directory
+      instead of using a reference to the projects' primary output so
+      that people using Visual C# Express 2010 can use Votive installed
+      into the stand alone VS 2010 Integrated Shell - only the Pro (or better)
+      versions of Visual Studio can load a Votive project into the same
+      solution as the C# projects - that's why this install project
+      is in its own solution -->
       <Component Id="PdfScribeBase" Guid="{7A339C63-AEA3-491C-8CB1-C78D21426EC1}">
         <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" >
           <netfx:NativeImage Id="PdfScribe.exe" Platform="64bit" Priority="1"   />
