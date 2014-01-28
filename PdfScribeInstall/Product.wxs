@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.0.0.0" Manufacturer="S T Chan" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.0.0.0" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="301" Compressed="yes" InstallScope="perMachine" 
              Platform="x64"
              InstallPrivileges="elevated" 
