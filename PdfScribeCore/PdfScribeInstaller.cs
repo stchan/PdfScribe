@@ -844,7 +844,7 @@ namespace PdfScribeCore
                 //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add printer PDF Scribe printer driver.");
                 logEventSource.TraceEvent(TraceEventType.Error,
                                           (int)TraceEventType.Error,
-                                          "Could add PDF Scribe printer driver." +
+                                          "Could not add PDF Scribe printer driver. " +
                                           String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return printerDriverInstalled;
@@ -860,10 +860,9 @@ namespace PdfScribeCore
             bool driverRemoved = NativeMethods.DeletePrinterDriverEx(null, ENVIRONMENT_64, DRIVERNAME, DPD_DELETE_UNUSED_FILES, 3);
             if (!driverRemoved)
             {
-                //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not remove PDF Scribe printer driver");
                 logEventSource.TraceEvent(TraceEventType.Error,
                                           (int)TraceEventType.Error,
-                                          "Could not remove PDF Scribe printer driver." +
+                                          "Could not remove PDF Scribe printer driver. " +
                                           String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return driverRemoved;
@@ -892,10 +891,9 @@ namespace PdfScribeCore
             }
             else
             {
-                //throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not add PDF Scribe virtual printer.");
                 logEventSource.TraceEvent(TraceEventType.Error,
                                           (int)TraceEventType.Error,
-                                          "Could not add PDF Scribe virtual printer." + 
+                                          "Could not add PDF Scribe virtual printer. " + 
                                           String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
             }
             return printerAdded;
@@ -922,7 +920,7 @@ namespace PdfScribeCore
                 {
                     logEventSource.TraceEvent(TraceEventType.Error,
                                               (int)TraceEventType.Error,
-                                              "Could not delete PDF Scribe virtual printer."  +
+                                              "Could not delete PDF Scribe virtual printer. "  +
                                               String.Format(WIN32ERROR, Marshal.GetLastWin32Error().ToString()));
                 }
             }
