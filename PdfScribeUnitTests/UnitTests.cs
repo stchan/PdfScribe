@@ -48,6 +48,7 @@ namespace PdfScribeUnitTests
             var scribeInstaller = new PdfScribeInstaller();
             scribeInstaller.IsPrinterDriverInstalled_Test("PDF Scribe Virtual Printer");
         }
+        
         //[Test]
         public void Test_InstallPdfScribePrinter()
         {
@@ -55,7 +56,7 @@ namespace PdfScribeUnitTests
             scribeInstaller.InstallPdfScribePrinter(@"C:\Code\PdfScribe\Lib\", String.Empty, String.Empty);
         }
 
-        //[Test]
+        [Test]
         public void Test_UninstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
