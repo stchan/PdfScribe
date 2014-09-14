@@ -80,28 +80,52 @@
         <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" >
           <netfx:NativeImage Id="PdfScribe.exe" Platform="64bit" Priority="1"   />
         </File>
-        <File Source="PrimaryOutputHarvest\PdfScribe.pdb" />
-        <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" />
-
-        <File Id="PdfScribeCoreDll" Source="PrimaryOutputHarvest\PdfScribeCore.dll"  >
+      </Component>
+      <Component Id="PdfScribeExePdb" Guid="{52D6263A-E94A-47F4-A289-DA128457A341}">
+        <File Source="PrimaryOutputHarvest\PdfScribe.pdb" KeyPath="yes" />
+      </Component>
+      <Component Id="PdfScribeExeConfig" Guid="{8665FD57-C8C8-46D2-9031-A1F826AB8FC0}">
+        <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" KeyPath="yes" />
+      </Component>
+      <Component Id="PdfScribeCoreDll" Guid="{4E776721-791F-47F4-A75C-186EA73640CE}">
+        <File Source="PrimaryOutputHarvest\PdfScribeCore.dll" KeyPath="yes"  >
           <netfx:NativeImage Id="PdfScribeCore.dll" Platform="64bit" Priority="1"   />
         </File>
-        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" />
-
-        <!-- Third party components -->
-        <File Source="..\Lib\gsdll64.dll" />
-        <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" />
-        <File Source="..\Lib\Microsoft.WindowsAPICodePack.pdb" />
-        <File Source="..\Lib\redmon64pdfscribe.dll" />
-        <File Source="..\Lib\PS5UI.DLL" />
-        <File Source="..\Lib\PSCRIPT.HLP" />
-        <File Source="..\Lib\PSCRIPT.NTF" />
-        <File Source="..\Lib\PSCRIPT5.DLL" />
-        <File Source="..\Lib\SCPDFPRN.ppd" />
-
-
       </Component>
-			<!-- </Component> -->
+      <Component Id="PdfScribeCoreDllPdb" Guid="{8979618A-C1B1-40B6-A400-D8DAF159184D}">
+        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" KeyPath="yes" />
+      </Component>
+      <!-- Third party components -->
+      <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">
+        <File Source="..\Lib\gsdll64.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="WindowsAPICodePackdll" Guid="{418EEE85-6BEA-4A50-93F7-99A0E4E26539}">
+        <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="WindowsAPICodePackpdb" Guid="{7DEC314E-83CC-426A-BF0E-325BD4297D2F}">
+        <File Source="..\Lib\Microsoft.WindowsAPICodePack.pdb" KeyPath="yes" />
+      </Component>
+      <Component Id="redmon64pdfscribedll" Guid="{E5B5533F-33FE-4187-84F7-21BDBF7AEF1A}">
+        <File Source="..\Lib\redmon64pdfscribe.dll" KeyPath="yes" />
+      </Component>
+      <Component Id="PS5UIDLL" Guid="{EA4D173A-D1AC-46FC-93CF-CCBB13CF62A6}">
+        <File Source="..\Lib\PS5UI.DLL" KeyPath="yes" />
+      </Component>
+      <Component Id="PSCRIPTHLP" Guid="{B96DF277-B483-46D8-8AC3-895D73E4A8CA}">
+        <File Source="..\Lib\PSCRIPT.HLP" KeyPath="yes" />
+      </Component>
+      <Component Id="PSCRIPTNTF" Guid="{C33507D7-EF2C-4C40-8BC8-065640FDC4F5}">
+        <File Source="..\Lib\PSCRIPT.NTF" KeyPath="yes" />
+      </Component>
+      <Component Id="PSCRIPT5DLL" Guid="{5513735E-3BDF-4CD4-92F7-7D9F8965CCF1}">
+        <File Source="..\Lib\PSCRIPT5.DLL" KeyPath="yes" />
+      </Component>
+      <Component Id="SCPDFPRNppd" Guid="{71646658-B1EA-4347-AEEA-3E60999D14E4}">
+        <File Source="..\Lib\SCPDFPRN.ppd" KeyPath="yes" />
+      </Component>
+
+
+      <!-- </Component> -->
 		</ComponentGroup>
 	</Fragment>
 </Wix>
