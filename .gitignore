@@ -6,3 +6,7 @@ TestResult.xml
 *.suo
 PdfScribeCore.csproj.user
 PdfScribe.csproj.user
+/PdfScribeInstall/PrimaryOutputHarvest/*.pdb
+/PdfScribeInstall/PrimaryOutputHarvest/*.exe
+/PdfScribeInstall/PrimaryOutputHarvest/*.config
+/PdfScribeInstall/PrimaryOutputHarvest/*.dll
