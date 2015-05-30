@@ -30,7 +30,7 @@
     <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
     <!-- Custom Actions -->
-    <Binary Id="PdfScribeInstallCustomAction.CA.dll" SourceFile="PrimaryOutputHarvest\PdfScribeInstallCustomAction.CA.dll" />
+    <Binary Id="PdfScribeInstallCustomAction.CA.dll" SourceFile="$(var.PdfScribeInstallCustomAction.TargetDir)$(var.PdfScribeInstallCustomAction.TargetName).CA.dll" />
     <CustomAction Id="SetCustomActionDataValues"
                   Return="check"
                   Property="InstallPrinter"
@@ -69,31 +69,24 @@
 
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- We copy everything from the PrimaryOutputHarvest directory
-      instead of using a reference to the projects' primary output so
-      that people using Visual C# Express 2010 can use Votive installed
-      into the stand alone VS 2010 Integrated Shell - only the Pro (or better)
-      versions of Visual Studio can load a Votive project into the same
-      solution as the C# projects - that's why this install project
-      is in its own solution -->
       <Component Id="PdfScribeBase" Guid="{7A339C63-AEA3-491C-8CB1-C78D21426EC1}">
-        <File Id="PdfScribeExe" Source="PrimaryOutputHarvest\PdfScribe.exe" KeyPath="yes" >
-          <netfx:NativeImage Id="PdfScribe.exe" Platform="64bit" Priority="1"   />
+        <File Id="PdfScribeExe" Source="$(var.PdfScribe.TargetPath)" KeyPath="yes" >
+          <netfx:NativeImage Id="$(var.PdfScribe.TargetFileName)" Platform="64bit" Priority="1"   />
         </File>
       </Component>
       <Component Id="PdfScribeExePdb" Guid="{52D6263A-E94A-47F4-A289-DA128457A341}">
-        <File Source="PrimaryOutputHarvest\PdfScribe.pdb" KeyPath="yes" />
+        <File Source="$(var.PdfScribe.TargetDir)$(var.PdfScribe.TargetName).pdb" KeyPath="yes" />
       </Component>
       <Component Id="PdfScribeExeConfig" Guid="{8665FD57-C8C8-46D2-9031-A1F826AB8FC0}">
-        <File Source="PrimaryOutputHarvest\PdfScribe.exe.config" KeyPath="yes" />
+        <File Source="$(var.PdfScribe.TargetDir)$(var.PdfScribe.TargetFileName).config" KeyPath="yes" />
       </Component>
       <Component Id="PdfScribeCoreDll" Guid="{4E776721-791F-47F4-A75C-186EA73640CE}">
-        <File Source="PrimaryOutputHarvest\PdfScribeCore.dll" KeyPath="yes"  >
-          <netfx:NativeImage Id="PdfScribeCore.dll" Platform="64bit" Priority="1"   />
+        <File Source="$(var.PdfScribeCore.TargetPath)" KeyPath="yes"  >
+          <netfx:NativeImage Id="$(var.PdfScribeCore.TargetFileName)" Platform="64bit" Priority="1"   />
         </File>
       </Component>
       <Component Id="PdfScribeCoreDllPdb" Guid="{8979618A-C1B1-40B6-A400-D8DAF159184D}">
-        <File Source="PrimaryOutputHarvest\PdfScribeCore.pdb" KeyPath="yes" />
+        <File Source="$(var.PdfScribeCore.TargetDir)$(var.PdfScribeCore.TargetName).pdb" KeyPath="yes" />
       </Component>
       <!-- Third party components -->
       <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">

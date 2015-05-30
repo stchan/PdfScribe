@@ -94,8 +94,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(WixCATargetsPath)" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)"  "$(SolutionDir)PdfScribeInstall\PrimaryOutputHarvest\$(TargetFileName)"
-copy "$(TargetDir)$(TargetName).CA.dll" "$(SolutionDir)PdfScribeInstall\PrimaryOutputHarvest\$(TargetName).CA.dll"
-copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)PdfScribeInstall\PrimaryOutputHarvest\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
