@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="WelcomeDlgDescription" >[ProductName] [ProductVersion]  will be installed. Click Next to continue or Cancel to exit the Setup Wizard.</String>
+  <String Id="WelcomeUpdateDlgDescriptionUpdate" Overridable="yes">[ProductName] will be updated to [ProductVersion]. Click Next to continue or Cancel to exit the Setup Wizard.</String>
+  <String Id="WelcomeDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}[ProductName] [ProductVersion] Setup</String>
+
+  <String Id="UserExitTitle" >{\WixUI_Font_Bigger}[ProductName] Setup was interrupted</String>
+  <String Id="UserExitDescription1" >[ProductName] installation was interrupted. Your system has not been modified.</String>
+  <String Id="UserExitDescription2" >Click the Finish button to exit the installer.</String>
+
+</WixLocalization>
