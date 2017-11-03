@@ -454,7 +454,7 @@ namespace PdfScribeCore
                     for (int i = 0; i < pcReturned; i++)
                     {
                         portMonitors.Add((MONITOR_INFO_2)Marshal.PtrToStructure(currentMonitor, typeof(MONITOR_INFO_2)));
-                        currentMonitor = (IntPtr)(currentMonitor.ToInt32() + Marshal.SizeOf(typeof(MONITOR_INFO_2)));
+                        currentMonitor = IntPtr.Add(currentMonitor, Marshal.SizeOf(typeof(MONITOR_INFO_2)));
                     }
                     Marshal.FreeHGlobal(pMonitors);
 
@@ -763,7 +763,8 @@ namespace PdfScribeCore
                     for (int loop = 0; loop < pcReturned; loop++)
                     {
                         installedPrinterDrivers.Add((DRIVER_INFO_6)Marshal.PtrToStructure(currentDriver, typeof(DRIVER_INFO_6)));
-                        currentDriver = (IntPtr)(currentDriver.ToInt32() + Marshal.SizeOf(typeof(DRIVER_INFO_6)));
+                        //currentDriver = (IntPtr)(currentDriver.ToInt32() + Marshal.SizeOf(typeof(DRIVER_INFO_6)));
+                        currentDriver = IntPtr.Add(currentDriver, Marshal.SizeOf(typeof(DRIVER_INFO_6)));
                     }
                     Marshal.FreeHGlobal(pDrivers);
                 }
