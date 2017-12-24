@@ -92,12 +92,14 @@
       <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">
         <File Source="..\Lib\gsdll64.dll" KeyPath="yes" />
       </Component>
+      <!--
       <Component Id="WindowsAPICodePackdll" Guid="{418EEE85-6BEA-4A50-93F7-99A0E4E26539}">
         <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" KeyPath="yes" />
       </Component>
       <Component Id="WindowsAPICodePackpdb" Guid="{7DEC314E-83CC-426A-BF0E-325BD4297D2F}">
         <File Source="..\Lib\Microsoft.WindowsAPICodePack.pdb" KeyPath="yes" />
       </Component>
+      -->
       <Component Id="redmon64pdfscribedll" Guid="{E5B5533F-33FE-4187-84F7-21BDBF7AEF1A}">
         <File Source="..\Lib\redmon64pdfscribe.dll" KeyPath="yes" />
       </Component>
