@@ -10,3 +10,4 @@ PdfScribe.csproj.user
 /PdfScribeInstall/PrimaryOutputHarvest/*.exe
 /PdfScribeInstall/PrimaryOutputHarvest/*.config
 /PdfScribeInstall/PrimaryOutputHarvest/*.dll
+/.vs/PdfScribe/v15/Server/sqlite3
