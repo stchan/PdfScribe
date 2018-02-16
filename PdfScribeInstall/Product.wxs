@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.0.4" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+	<Product Id="{8372D30B-89F2-4D15-9E8F-1640A609D884}" Name="PDF Scribe" Language="1033" Version="1.0.5" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" 
              Platform="x64"
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
-             Comments="PDF Scribe Virtual Printer 1.0.4 installation package"/>
+             Comments="PDF Scribe Virtual Printer 1.0.5 installation package"
+             Id="*" />
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+                  Schedule="afterInstallValidate"
+                  AllowDowngrades="no" AllowSameVersionUpgrades="no"/>
     <MediaTemplate EmbedCab="yes"/>
 
     <Icon Id="AdobeIcon.ico" SourceFile="..\Common\AdobeIcon.ico"/>
@@ -50,7 +53,7 @@
     <InstallExecuteSequence>
       <Custom Action="SetCustomActionDataValues" After="InstallFiles" >NOT Installed</Custom>
       <Custom Action="InstallPrinter" After="SetCustomActionDataValues"  >NOT Installed</Custom>
-      <Custom Action="UninstallPrinter" Before="RemoveFiles" >Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="UninstallPrinter" Before="RemoveFiles" >(Installed) OR (UPGRADINGPRODUCTCODE) OR (REMOVE)</Custom>
     </InstallExecuteSequence>
 
     <!-- Use the UI that allows an install directory to be chosen-->
@@ -92,14 +95,6 @@
       <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">
         <File Source="..\Lib\gsdll64.dll" KeyPath="yes" />
       </Component>
-      <!--
-      <Component Id="WindowsAPICodePackdll" Guid="{418EEE85-6BEA-4A50-93F7-99A0E4E26539}">
-        <File Source="..\Lib\Microsoft.WindowsAPICodePack.dll" KeyPath="yes" />
-      </Component>
-      <Component Id="WindowsAPICodePackpdb" Guid="{7DEC314E-83CC-426A-BF0E-325BD4297D2F}">
-        <File Source="..\Lib\Microsoft.WindowsAPICodePack.pdb" KeyPath="yes" />
-      </Component>
-      -->
       <Component Id="redmon64pdfscribedll" Guid="{E5B5533F-33FE-4187-84F7-21BDBF7AEF1A}">
         <File Source="..\Lib\redmon64pdfscribe.dll" KeyPath="yes" />
       </Component>
