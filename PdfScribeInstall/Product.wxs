@@ -58,7 +58,7 @@
 
     <!-- Use the UI that allows an install directory to be chosen-->
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
-    <WixVariable Id="WixUILicenseRtf" Value="..\Common\gpl-3.0.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\Common\agpl-3.0.rtf" />
     <UIRef Id="WixUI_InstallDir" />
   </Product>
 
