@@ -1,4 +1,4 @@
-# PdfScribe v1.0.5
+# PdfScribe v1.0.6
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -9,7 +9,7 @@ PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stch
 
 ## Building from source
 
-Visual Studio 2015, Wix 3.11, and Votive 2015 are required to build PdfScribe.
+Visual Studio 2017, Wix 3.11, and Votive 2017 are required to build PdfScribe.
 
 PdfScribe links to, and distributes the following third party components:
 
@@ -19,7 +19,7 @@ PdfScribe links to, and distributes the following third party components:
 
 ## License
 
-Redmon is distributed under the GPL v3. Ghostscript is AGPL (more restrictive than GPLv3), so PdfScribe is bound by that license.
+Ghostscript is AGPL (more restrictive than GPLv3), so PdfScribe is bound by that license.
 
 
 
@@ -29,7 +29,7 @@ In the application config file (PdfScribe.exe.config), there are two settings in
 
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. 
-
+* ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
 
 ## To do
 

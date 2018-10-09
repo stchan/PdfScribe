@@ -69,6 +69,7 @@ namespace PdfScribe
                                                 String.Format("-sOutputFile={0}", outputFilename), standardInputFilename };
 
                     GhostScript64.CallAPI(ghostScriptArguments);
+                    DisplayPdf(outputFilename);
                 }
             }
             catch (IOException ioEx)
@@ -239,6 +240,22 @@ namespace PdfScribe
                                           "Output filename is longer than 260 characters, or blank.");
             }
             return pathIsValid;
+        }
+
+        /// <summary>
+        /// Opens the PDF in the default viewer
+        /// if the OpenAfterCreating app setting is "True"
+        /// and the file extension is .PDF
+        /// </summary>
+        /// <param name="pdfFilename"></param>
+        static void DisplayPdf(String pdfFilename)
+        {
+            if (Properties.Settings.Default.OpenAfterCreating &&
+                !String.IsNullOrEmpty(Path.GetExtension(pdfFilename)) &&
+                (Path.GetExtension(pdfFilename).ToUpper() == ".PDF"))
+            {
+                Process.Start(pdfFilename);
+            }
         }
 
         /// <summary>
