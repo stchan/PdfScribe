@@ -25,7 +25,7 @@ Ghostscript is AGPL (more restrictive than GPLv3), so PdfScribe is bound by that
 
 ## Configuration
  
-In the application config file (PdfScribe.exe.config), there are two settings in the "applicationSettings" element:
+In the application config file (PdfScribe.exe.config), there are the following settings in the "applicationSettings" element:
 
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. 
