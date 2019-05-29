@@ -5,11 +5,11 @@
     <Setting Name="OutputFile" Type="System.String" Scope="Application">
       <Value Profile="(Default)">%UserProfile%\PDFSCRIBE.PDF</Value>
     </Setting>
-    <Setting Name="AskUserForOutputFilename" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="OpenAfterCreating" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AskUserForOutputFilename" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

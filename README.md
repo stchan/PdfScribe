@@ -1,4 +1,4 @@
-# PdfScribe v1.0.6
+# PdfScribe v1.0.7
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -19,8 +19,7 @@ PdfScribe links to, and distributes the following third party components:
 
 ## License
 
-Ghostscript is AGPL (more restrictive than GPLv3), so PdfScribe is bound by that license.
-
+PdfScribe is AGPL.
 
 
 ## Configuration
@@ -28,7 +27,7 @@ Ghostscript is AGPL (more restrictive than GPLv3), so PdfScribe is bound by that
 In the application config file (PdfScribe.exe.config), there are the following settings in the "applicationSettings" element:
 
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
-* ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. 
+* ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
 
 ## To do
@@ -38,7 +37,4 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * GUI for configuration
 * Allow selection of page sizes other than default
 * Watermarking output
-
- 
-
 

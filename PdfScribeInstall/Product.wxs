@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="{AF5F6415-3DB9-4B88-B1AE-37D4A736AD3A}" Name="PDF Scribe" Language="1033" Version="1.0.6" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+	<Product Id="{DE27E86D-0514-45DF-B0CC-CFF2C1DF7038}" Name="PDF Scribe" Language="1033" Version="1.0.7" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" 
              Platform="x64"
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
-             Comments="PDF Scribe Virtual Printer 1.0.6 installation package"
+             Comments="PDF Scribe Virtual Printer 1.0.7 installation package"
              Id="*" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
