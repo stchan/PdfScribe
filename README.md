@@ -32,7 +32,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 
 
 ## Release notes
-#### v1.07
+#### v1.0.7
 * Fix for issue #13 (Couldn't use environment variable in output filename).
 * Now defaults to use the print spooler rather than direct printing. (issue #14)
 
