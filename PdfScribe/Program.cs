@@ -66,7 +66,8 @@ namespace PdfScribe
                     // Only set absolute minimum parameters, let the postscript input
                     // dictate as much as possible
                     String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
-                                                String.Format("-sOutputFile={0}", outputFilename), standardInputFilename };
+                                                String.Format("-sOutputFile={0}", outputFilename), standardInputFilename,
+                                                "-c", @"[/Creator(PdfScribe 1.0.7 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
 
                     GhostScript64.CallAPI(ghostScriptArguments);
                     DisplayPdf(outputFilename);
