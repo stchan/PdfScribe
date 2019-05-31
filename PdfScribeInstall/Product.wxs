@@ -21,14 +21,16 @@
 		</Feature>
 
 
-    <!-- .Net 4.0 Prerequisite -->
-    <PropertyRef Id="NETFRAMEWORK40FULL"/>
-    <Condition Message="This application requires .NET Framework 4.0. Please install the .NET Framework then run this installer again.">
-      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
+    <!-- .Net 4.6.1 Prerequisite -->
+    <PropertyRef Id="WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED"/>
+    <Condition Message="This application requires .NET Framework 4.6.1. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED]]>
     </Condition>
     <!-- OS version prerequisite -->
-    <Condition Message="64-bit Windows Vista SP2, Server 2008 SP2, or later are required."><![CDATA[Installed OR ((VersionNT >= 600 AND ServicePackLevel >= 2 AND VersionNT64)
-                                                                                                              OR (VersionNT >= 601 AND VersionNT64))]]></Condition>    
+    <Condition Message="64-bit Windows 7, Server 2008 SP2, or later are required.">
+      <![CDATA[Installed OR (VersionNT >= 601 AND VersionNT64)]]>
+    </Condition>
+
     <!-- Check if the user has administrator privileges -->
     <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
