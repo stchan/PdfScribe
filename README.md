@@ -32,12 +32,14 @@ In the application config file (PdfScribe.exe.config), there are the following s
 
 
 ## Release notes
+#### v1.07
+* Fix for issue #13 (Couldn't use environment variable in output filename).
 
 #### v1.0.6
-Added option to automatically open PDF in the default viewer (enhancement request from issue #4).
+* Added option to automatically open PDF in the default viewer (enhancement request from issue #4).
 
 #### v1.0.5
-Installer package now properly removes older versions during a major upgrade. If you are upgrading from v1.0.4 or older, manually remove the old version first - the UninstallPrinter custom action is never called during an upgrade.
+* Installer package now properly removes older versions during a major upgrade. If you are upgrading from v1.0.4 or older, manually remove the old version first - the UninstallPrinter custom action is never called during an upgrade.
 
 ## To do
 
