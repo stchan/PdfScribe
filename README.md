@@ -30,11 +30,19 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
 
+
+## Release notes
+
+#### v1.0.6
+Added option to automatically open PDF in the default viewer (enhancement request from issue #4).
+
+#### v1.0.5
+Installer package now properly removes older versions during a major upgrade. If you are upgrading from v1.0.4 or older, manually remove the old version first - the UninstallPrinter custom action is never called during an upgrade.
+
 ## To do
 
 * Allow auto-generated filenames with sequence numbers if the user doesn't want to overwrite (ex: OUTPUT-001.PDF, OUTPUT-002.PDF, etc)
 * Allow file appending if **OutputFile** setting is used.
 * GUI for configuration
-* Allow selection of page sizes other than default
 * Watermarking output
 
