@@ -13,6 +13,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "PdfScribeInstall", "PdfScri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfScribeTests", "PdfScribeTests\PdfScribeTests.csproj", "{8562A5BC-A70E-40DD-A7E7-5611D332A983}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfScribeAbstract", "PdfScribeAbstract\PdfScribeAbstract.csproj", "{3FA6EEA7-E054-47B3-9F10-3A81D861B547}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,18 @@ Global
 		{8562A5BC-A70E-40DD-A7E7-5611D332A983}.Release|x64.ActiveCfg = Release|Any CPU
 		{8562A5BC-A70E-40DD-A7E7-5611D332A983}.Release|x86.ActiveCfg = Release|Any CPU
 		{8562A5BC-A70E-40DD-A7E7-5611D332A983}.Release|x86.Build.0 = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|x64.Build.0 = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Debug|x86.Build.0 = Debug|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|x64.ActiveCfg = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|x64.Build.0 = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|x86.ActiveCfg = Release|Any CPU
+		{3FA6EEA7-E054-47B3-9F10-3A81D861B547}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
