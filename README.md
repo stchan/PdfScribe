@@ -29,7 +29,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
-
+* ****PrintPdfHookImpl**** - when implemented the `IPrintPdfHook` interface by referencing `PdfScribeAbstract.dll` and put your implementation dll to the installation path, set the value to be "`[your assembly name], [your class name]`", you can make the printer perform custom print behavior.
 
 ## Release notes
 #### v1.0.7
