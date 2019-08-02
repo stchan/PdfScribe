@@ -52,6 +52,14 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PdfScribeAbstract\PdfScribeAbstract.csproj">
+      <Name>PdfScribeAbstract</Name>
+      <Project>{3fa6eea7-e054-47b3-9f10-3a81d861b547}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\PdfScribeCore\PdfScribeCore.csproj">
       <Name>PdfScribeCore</Name>
       <Project>{1ead8e9a-a123-4c37-b31e-aee1354df003}</Project>
