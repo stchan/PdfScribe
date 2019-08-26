@@ -30,6 +30,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
 
+## Known Issues
+* As of Windows 10 build 1903 (though this issue has been reported as early as build 1709), the bundled port monitor (Redmon 1.9) always runs as the SYSTEM user, so any dialog boxes (like for setting the filename) never appear on the user's desktop. Windows 7 does not appear to be affected. (See issue #17)
 
 ## Release notes
 #### v1.0.7
