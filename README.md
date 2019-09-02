@@ -1,4 +1,4 @@
-# PdfScribe v1.0.7
+# PdfScribe v1.0.8
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -34,6 +34,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * As of Windows 10 build 1903 (though this issue has been reported as early as build 1709), the bundled port monitor (Redmon 1.9) always runs as the SYSTEM user, so any dialog boxes (like for setting the filename) never appear on the user's desktop. Windows 7 does not appear to be affected. (See issue #17)
 
 ## Release notes
+#### v1.0.8
+* Fix for issue #26 (bug with filename containing unicode/utf8 letters)
 #### v1.0.7
 * Fix for issue #13 (Couldn't use environment variable in output filename).
 * Now defaults to use the print spooler rather than direct printing. (issue #14)
