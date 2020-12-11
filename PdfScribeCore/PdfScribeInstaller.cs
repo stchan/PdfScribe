@@ -881,7 +881,7 @@ namespace PdfScribeCore
             pdfScribePrinter.pDriverName = DRIVERNAME;
             pdfScribePrinter.pPrintProcessor = PRINTPROCESOR;
             pdfScribePrinter.pDatatype = "RAW";
-            pdfScribePrinter.Attributes = 0x00000040;
+            pdfScribePrinter.Attributes = 0x00000041;
 
             int pdfScribePrinterHandle = NativeMethods.AddPrinter(null, 2, ref pdfScribePrinter);
             if (pdfScribePrinterHandle != 0)
