@@ -31,7 +31,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
 
 ## Known Issues
-* ~~As of Windows 10 build 1903 (though this issue has been reported as early as build 1709), the bundled port monitor (Redmon 1.9) always runs as the SYSTEM user, so any dialog boxes (like for setting the filename) never appear on the user's desktop. Windows 7 does not appear to be affected. (See issue #17)~~ Potentially fixed in v1.0.9 - please go to issue #17 and report your experience if you had this problem. Thanks to @tahoop for the Redmon modification.
+* Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
 #### v1.0.9
