@@ -58,7 +58,6 @@ namespace PdfScribe
                         standardInputReader.BaseStream.CopyTo(standardInputFile);
                     }
                 }
-
                 if (GetPdfOutputFilename(ref outputFilename))
                 {
                     // Remove the existing PDF file if present
@@ -70,6 +69,7 @@ namespace PdfScribe
                                                 "-c", @"[/Creator(PdfScribe 1.0.7 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
 
                     GhostScript64.CallAPI(ghostScriptArguments);
+                    SavePrintTitleAsOutputFilename(ref outputFilename, standardInputFilename);
                     DisplayPdf(outputFilename);
                 }
             }
@@ -85,6 +85,7 @@ namespace PdfScribe
                 DisplayErrorMessage(errorDialogCaption,
                                     errorDialogInstructionCouldNotWrite + Environment.NewLine +
                                     String.Format("{0} is in use.", outputFilename));
+                MessageBox.Show(ioEx.ToString());
             }
             catch (UnauthorizedAccessException unauthorizedEx)
             {
@@ -271,6 +272,93 @@ namespace PdfScribe
                             MessageBoxDefaultButton.Button1,
                             MessageBoxOptions.DefaultDesktopOnly);
 
+        }
+
+        /// <summary>
+        /// Get outputFilename from Print Title
+        /// </summary>
+        /// <param name="standardInputFilename"></param>
+        /// <returns></returns>
+        static String GetPrintTitleAsOutputFilename(String standardInputFilename)
+        {
+            String outputFilename = String.Empty;
+            String outputFoldername = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.OutputFile));
+            logEventSource.TraceEvent(TraceEventType.Information,
+                                    (int)TraceEventType.Information,
+                                    $"GetPrintTitleAsOutputFilename: standardInputFilename:{standardInputFilename}, outputFoldername:{outputFoldername}");
+            if (Properties.Settings.Default.UsePrintTitleAsOutputFileName)
+            {
+                const String titlePrefix = "%%Title: ";
+                using (var fs = new FileStream(standardInputFilename, FileMode.Open, FileAccess.Read))
+                using (var sr = new StreamReader(fs))
+                {
+                    string line = String.Empty;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith(titlePrefix))
+                        {
+                            var title = line.Substring(titlePrefix.Length);
+                            var titleFilename = title;
+                            try
+                            {
+                                titleFilename = Path.GetFileName(title);
+                            }
+                            catch { }
+                            outputFilename = Path.Combine(outputFoldername, Normalize($"{titleFilename}.PDF"));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return outputFilename;
+
+        }
+
+        static void SavePrintTitleAsOutputFilename(ref String outputFilename, 
+                                                    String standardInputFilename)
+        {
+            if (Properties.Settings.Default.UsePrintTitleAsOutputFileName)
+            {
+                String oldOutputFilename = outputFilename;
+                String outputFolder = Path.GetDirectoryName(oldOutputFilename);
+                const String titlePrefix = "%%Title: ";
+                using (var fs = new FileStream(standardInputFilename, FileMode.Open, FileAccess.Read))
+                using (var sr = new StreamReader(fs))
+                {
+                    string line = String.Empty;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith(titlePrefix))
+                        {
+                            var title = line.Substring(titlePrefix.Length);
+                            var titleFilename = title;
+                            try
+                            {
+                                titleFilename = Path.GetFileName(title);
+                            }
+                            catch { }
+                            outputFilename = Path.Combine(outputFolder, Normalize($"{titleFilename}.PDF"));
+                            break;
+                        }
+                    }
+                }
+                //rename to new filename
+                System.IO.File.Move(oldOutputFilename, outputFilename);
+                MessageBox.Show($"SavePrintTitleAsOutputFileName:Move-oldOutputFilename:{oldOutputFilename}, outputFilename:{outputFilename}");
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Normalize Filename
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        private static string Normalize(string filename)
+        {
+            return Regex.Replace(filename, "[:\\*\\?\"<>\\|]", string.Empty);
         }
     }
 }
