@@ -42,6 +42,7 @@ namespace PdfScribe
         [STAThread]
         static void Main(string[] args)
         {
+             
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
 
@@ -69,6 +70,7 @@ namespace PdfScribe
                                                 "-c", @"[/Creator(PdfScribe 1.0.7 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
 
                     GhostScript64.CallAPI(ghostScriptArguments);
+                    //ref standardInputFilename's title as output filename
                     SavePrintTitleAsOutputFilename(ref outputFilename, standardInputFilename);
                     DisplayPdf(outputFilename);
                 }
@@ -335,7 +337,7 @@ namespace PdfScribe
                             var titleFilename = title;
                             try
                             {
-                                titleFilename = Path.GetFileName(title);
+                                titleFilename = Path.GetFileNameWithoutExtension(title);
                             }
                             catch { }
                             outputFilename = Path.Combine(outputFolder, Normalize($"{titleFilename}.PDF"));
@@ -344,8 +346,8 @@ namespace PdfScribe
                     }
                 }
                 //rename to new filename
-                System.IO.File.Move(oldOutputFilename, outputFilename);
-                MessageBox.Show($"SavePrintTitleAsOutputFileName:Move-oldOutputFilename:{oldOutputFilename}, outputFilename:{outputFilename}");
+                System.IO.File.Copy(oldOutputFilename, outputFilename, true);
+                //MessageBox.Show($"SavePrintTitleAsOutputFileName:Move-oldOutputFilename:{oldOutputFilename}, outputFilename:{outputFilename}, standardInputFilename:{standardInputFilename}");
             }
 
             

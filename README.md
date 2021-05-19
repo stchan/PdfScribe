@@ -13,9 +13,9 @@ Visual Studio 2017, Wix 3.11, and Votive 2017 are required to build PdfScribe.
 
 PdfScribe links to, and distributes the following third party components:
 
-* Microsoft Postscript Printer Driver (V3)
-* Ghostscript (64-bit)
-* Redmon 1.9 (64-bit)
+* [Microsoft Postscript Printer Driver (V3)](https://docs.microsoft.com/en-us/windows-hardware/drivers/print/microsoft-postscript-printer-driver)
+* [Ghostscript (64-bit)](https://www.ghostscript.com/download/gsdnld.html)
+* [Redmon 1.9 (64-bit)](http://www.ghostgum.com.au/software/redmon.htm)
 
 ## License
 
@@ -29,6 +29,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
+* ****UsePrintTitleAsOutputFileName**** - set value to *true* if you want to auto save as input file name for output file name (output folder use OutputFile's Folder Path). AskUserForOutputFilename = false, OutputFile should have value 
 
 ## Known Issues
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
