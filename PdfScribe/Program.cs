@@ -277,46 +277,10 @@ namespace PdfScribe
         }
 
         /// <summary>
-        /// Get outputFilename from Print Title
+        /// Read standardInputFilename's %%Title value and Copy outputfilename as Title value 
         /// </summary>
-        /// <param name="standardInputFilename"></param>
-        /// <returns></returns>
-        static String GetPrintTitleAsOutputFilename(String standardInputFilename)
-        {
-            String outputFilename = String.Empty;
-            String outputFoldername = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.OutputFile));
-            logEventSource.TraceEvent(TraceEventType.Information,
-                                    (int)TraceEventType.Information,
-                                    $"GetPrintTitleAsOutputFilename: standardInputFilename:{standardInputFilename}, outputFoldername:{outputFoldername}");
-            if (Properties.Settings.Default.UsePrintTitleAsOutputFileName)
-            {
-                const String titlePrefix = "%%Title: ";
-                using (var fs = new FileStream(standardInputFilename, FileMode.Open, FileAccess.Read))
-                using (var sr = new StreamReader(fs))
-                {
-                    string line = String.Empty;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        if (line.StartsWith(titlePrefix))
-                        {
-                            var title = line.Substring(titlePrefix.Length);
-                            var titleFilename = title;
-                            try
-                            {
-                                titleFilename = Path.GetFileName(title);
-                            }
-                            catch { }
-                            outputFilename = Path.Combine(outputFoldername, Normalize($"{titleFilename}.PDF"));
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return outputFilename;
-
-        }
-
+        /// <param name="outputFilename">default outputFilename</param>
+        /// <param name="standardInputFilename">temp Filename</param>
         static void SavePrintTitleAsOutputFilename(ref String outputFilename, 
                                                     String standardInputFilename)
         {
