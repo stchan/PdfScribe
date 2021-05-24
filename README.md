@@ -35,6 +35,9 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.0.10
+* 加入 **UsePrintTitleAsOutputFileName** 參數設定 ，預設使用 **OutputFile** 為 PDF 輸出檔名，Adobe PDF printer 會取得列印檔名來當作預設的輸出檔名，所以加入 **UsePrintTitleAsOutputFileName** 參數設定。當 **AskUserForOutputFilename** 設定為 **false**，會 Search 暫存檔中的 Title 是否有值，有的話，就會依該值做為輸出的 PDF 檔案名稱。
+
 #### v1.0.9
 * Redmon modification for issue #17 by @tahoop (Dialog box for filename not appearing).
 #### v1.0.8
