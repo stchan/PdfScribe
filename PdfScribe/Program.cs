@@ -87,7 +87,7 @@ namespace PdfScribe
                 DisplayErrorMessage(errorDialogCaption,
                                     errorDialogInstructionCouldNotWrite + Environment.NewLine +
                                     String.Format("{0} is in use.", outputFilename));
-                MessageBox.Show(ioEx.ToString());
+               
             }
             catch (UnauthorizedAccessException unauthorizedEx)
             {
