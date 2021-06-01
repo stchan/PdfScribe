@@ -36,6 +36,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 
 ## Release notes
 #### v1.0.10
+* It will replace **OutputFile** setting value with input filename, when **UsePrintTitleAsOutputFileName** setting is set *true*. For example, input file name is hr.rpt then output file name will becomes hr.pdf 
 * 加入 **UsePrintTitleAsOutputFileName** 參數設定 ，預設使用 **OutputFile** 為 PDF 輸出檔名，Adobe PDF printer 會取得列印檔名來當作預設的輸出檔名，所以加入 **UsePrintTitleAsOutputFileName** 參數設定。當 **AskUserForOutputFilename** 設定為 **false**，會 Search 暫存檔中的 Title 是否有值，有的話，就會依該值做為輸出的 PDF 檔案名稱。
 
 #### v1.0.9
