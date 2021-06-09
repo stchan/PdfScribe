@@ -42,6 +42,7 @@ namespace PdfScribe
         [STAThread]
         static void Main(string[] args)
         {
+             
             // Install the global exception handler
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(Application_UnhandledException);
 
@@ -58,7 +59,6 @@ namespace PdfScribe
                         standardInputReader.BaseStream.CopyTo(standardInputFile);
                     }
                 }
-
                 if (GetPdfOutputFilename(ref outputFilename))
                 {
                     // Remove the existing PDF file if present
@@ -70,6 +70,8 @@ namespace PdfScribe
                                                 "-c", @"[/Creator(PdfScribe 1.0.7 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
 
                     GhostScript64.CallAPI(ghostScriptArguments);
+                    //ref standardInputFilename's title as output filename
+                    SavePrintTitleAsOutputFilename(ref outputFilename, standardInputFilename);
                     DisplayPdf(outputFilename);
                 }
             }
@@ -85,6 +87,7 @@ namespace PdfScribe
                 DisplayErrorMessage(errorDialogCaption,
                                     errorDialogInstructionCouldNotWrite + Environment.NewLine +
                                     String.Format("{0} is in use.", outputFilename));
+               
             }
             catch (UnauthorizedAccessException unauthorizedEx)
             {
@@ -271,6 +274,57 @@ namespace PdfScribe
                             MessageBoxDefaultButton.Button1,
                             MessageBoxOptions.DefaultDesktopOnly);
 
+        }
+
+        /// <summary>
+        /// Read standardInputFilename's %%Title value and Copy outputfilename as Title value 
+        /// </summary>
+        /// <param name="outputFilename">default outputFilename</param>
+        /// <param name="standardInputFilename">temp Filename</param>
+        static void SavePrintTitleAsOutputFilename(ref String outputFilename, 
+                                                    String standardInputFilename)
+        {
+            if (Properties.Settings.Default.UsePrintTitleAsOutputFileName)
+            {
+                String oldOutputFilename = outputFilename;
+                String outputFolder = Path.GetDirectoryName(oldOutputFilename);
+                const String titlePrefix = "%%Title: ";
+                using (var fs = new FileStream(standardInputFilename, FileMode.Open, FileAccess.Read))
+                using (var sr = new StreamReader(fs))
+                {
+                    string line = String.Empty;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (line.StartsWith(titlePrefix))
+                        {
+                            var title = line.Substring(titlePrefix.Length);
+                            var titleFilename = title;
+                            try
+                            {
+                                titleFilename = Path.GetFileNameWithoutExtension(title);
+                            }
+                            catch { }
+                            outputFilename = Path.Combine(outputFolder, Normalize($"{titleFilename}.PDF"));
+                            break;
+                        }
+                    }
+                }
+                //rename to new filename
+                System.IO.File.Copy(oldOutputFilename, outputFilename, true);
+                //MessageBox.Show($"SavePrintTitleAsOutputFileName:Move-oldOutputFilename:{oldOutputFilename}, outputFilename:{outputFilename}, standardInputFilename:{standardInputFilename}");
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Normalize Filename
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        private static string Normalize(string filename)
+        {
+            return Regex.Replace(filename, "[:\\*\\?\"<>\\|]", string.Empty);
         }
     }
 }
