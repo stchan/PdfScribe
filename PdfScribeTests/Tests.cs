@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +47,8 @@ namespace PdfScribeTests
         public void Test_InstallPdfScribePrinter()
         {
             var scribeInstaller = new PdfScribeInstaller();
-            scribeInstaller.InstallPdfScribePrinter(@"C:\Code\PdfScribe\Lib\", String.Empty, String.Empty);
+            var path = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "lib"));
+            scribeInstaller.InstallPdfScribePrinter(path, String.Empty, String.Empty);
         }
 
         //[Test]
