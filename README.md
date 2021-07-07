@@ -19,7 +19,7 @@ PdfScribe links to, and distributes the following third party components:
 
 ## License
 
-PdfScribe is AGPL.
+PdfScribe is licensed under version 3 of the AGPL. See https://www.gnu.org/licenses/agpl-3.0.txt for more details.
 
 
 ## Configuration
