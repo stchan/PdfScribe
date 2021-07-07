@@ -4,7 +4,7 @@
   <String Id="WelcomeUpdateDlgDescriptionUpdate" Overridable="yes">[ProductName] will be updated to [ProductVersion]. Click Next to continue or Cancel to exit.</String>
   <String Id="WelcomeDlgTitle" Overridable="yes">{\WixUI_Font_Bigger}[ProductName] [ProductVersion] Setup</String>
 
-  <!-- Some of these aren't currently used, but might as well make the chagnes while I'm here -->
+  <!-- Some of these aren't currently used, but might as well make the changes while I'm here -->
   <String Id="VerifyReadyDlgInstallText" Overridable="yes">Click Install to begin the installation. Click Back to review or change any of your installation settings. Click Cancel to exit.</String>
   <String Id="VerifyReadyDlgChangeText" Overridable="yes">Click Change to begin the installation. Click Back to review or change any of your installation settings. Click Cancel to exit.</String>
   <String Id="VerifyReadyDlgRepairText" Overridable="yes">Click Repair to repair the installation of [ProductName]. Click Back to review or change any of your installation settings. Click Cancel to exit.</String>
