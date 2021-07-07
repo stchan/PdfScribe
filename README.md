@@ -34,6 +34,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.1.0
+* Redmon modification for issue #17 by @mca0815
 #### v1.0.9
 * Redmon modification for issue #17 by @tahoop (Dialog box for filename not appearing).
 #### v1.0.8
