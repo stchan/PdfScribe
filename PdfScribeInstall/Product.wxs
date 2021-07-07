@@ -5,7 +5,7 @@
              Platform="x64"
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
-             Comments="PDF Scribe Virtual Printer 1.1.0rc1 installation package"
+             Comments="PDF Scribe Virtual Printer 1.1.0 installation package"
              Id="*" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."

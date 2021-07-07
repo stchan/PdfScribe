@@ -67,7 +67,7 @@ namespace PdfScribe
                     // dictate as much as possible
                     String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
                                                 String.Format("-sOutputFile={0}", outputFilename), standardInputFilename,
-                                                "-c", @"[/Creator(PdfScribe 1.0.7 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
+                                                "-c", @"[/Creator(PdfScribe 1.1.0 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
 
                     GhostScript64.CallAPI(ghostScriptArguments);
                     DisplayPdf(outputFilename);

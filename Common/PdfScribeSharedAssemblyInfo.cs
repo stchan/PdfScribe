@@ -5,7 +5,7 @@
 // associated with an assembly.
 [assembly: AssemblyCompany("Black Telescope Workshop")]
 [assembly: AssemblyProduct("PDF Scribe")]
-[assembly: AssemblyCopyright("Copyright © S T Chan 2013-2020")]
+[assembly: AssemblyCopyright("Copyright © S T Chan 2013-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
