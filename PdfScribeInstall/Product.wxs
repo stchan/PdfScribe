@@ -21,14 +21,10 @@
 		</Feature>
 
 
-    <!-- .Net 4.6.1 Prerequisite -->
-    <PropertyRef Id="WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED"/>
-    <Condition Message="This application requires .NET Framework 4.6.1. Please install the .NET Framework then run this installer again.">
-      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_461_OR_LATER_INSTALLED]]>
-    </Condition>
-    <!-- OS version prerequisite -->
-    <Condition Message="64-bit Windows 7, Server 2008 SP2, or later are required.">
-      <![CDATA[Installed OR (VersionNT >= 601 AND VersionNT64)]]>
+    <!-- .NET 4.8 prerequisite -->
+    <PropertyRef Id="WIXNETFX4RELEASEINSTALLED" />
+    <Condition Message='OAISIS Services requires .NET Framework 4.8 (or later).'>
+      <![CDATA[Installed or (WIXNETFX4RELEASEINSTALLED >= "#528040")]]>
     </Condition>
 
     <!-- Check if the user has administrator privileges -->
