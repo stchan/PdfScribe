@@ -25,9 +25,13 @@ namespace PdfScribe
             lock (resourceLock)
             {
                 NativeMethods.CreateAPIInstance(out gsInstancePtr, IntPtr.Zero);
+                IntPtr[] utf8Ptrs = new IntPtr[args.Length];
+                for (int i = 0; i < utf8Ptrs.Length; i++)
+                    utf8Ptrs[i] = NativeMethods.NativeUtf8FromString(args[i]);
                 try
                 {
-                    int result = NativeMethods.InitAPI(gsInstancePtr, args.Length, args);
+                    NativeMethods.SetEncoding(gsInstancePtr, NativeMethods.GS_ARG_ENCODING_UTF8);
+                    int result = NativeMethods.InitAPI(gsInstancePtr, args.Length, utf8Ptrs);
 
                     if (result < 0)
                     {
@@ -36,6 +40,8 @@ namespace PdfScribe
                 }
                 finally
                 {
+                    for (int i = 0; i < utf8Ptrs.Length; i++)
+                        Marshal.FreeHGlobal(utf8Ptrs[i]);
                     Cleanup(gsInstancePtr);
                 }
             }
