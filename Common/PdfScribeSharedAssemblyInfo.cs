@@ -5,7 +5,7 @@
 // associated with an assembly.
 [assembly: AssemblyCompany("Black Telescope Workshop")]
 [assembly: AssemblyProduct("PDF Scribe")]
-[assembly: AssemblyCopyright("Copyright © S T Chan 2013-2021")]
+[assembly: AssemblyCopyright("Copyright © S T Chan 2013-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -22,4 +22,4 @@
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.2.*")]
+[assembly: AssemblyVersion("1.1.2")]

@@ -6,7 +6,7 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>{3c255536-a7f1-4913-9c7f-966dffee01bc}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>PdfScribeInstall_1.1</OutputName>
+    <OutputName>PdfScribeInstall</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
@@ -89,4 +89,11 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
-</Project>
+  <Target Name="BeforeBuild">
+    <GetAssemblyIdentity AssemblyFiles="..\PdfScribe\bin\x64\$(Configuration)\PdfScribe.exe">
+      <Output TaskParameter="Assemblies" ItemName="AsmInfo" />
+    </GetAssemblyIdentity>
+    <CreateProperty Value="$(ProjectName)_%(AsmInfo.Version)">
+      <Output TaskParameter="Value" PropertyName="TargetName" />
+    </CreateProperty>
+  </Target></Project>
