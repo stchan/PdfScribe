@@ -26,6 +26,9 @@
     <Condition Message='[ProductName] requires .NET Framework 4.8 (or later).'>
       <![CDATA[Installed or (WIXNETFX4RELEASEINSTALLED >= "#528040")]]>
     </Condition>
+    <Condition Message="64-bit Windows is required.">
+      <![CDATA[Installed OR VersionNT64]]>
+    </Condition>
 
     <!-- Check if the user has administrator privileges -->
     <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
