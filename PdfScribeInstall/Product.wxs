@@ -23,7 +23,7 @@
 
     <!-- .NET 4.8 prerequisite -->
     <PropertyRef Id="WIXNETFX4RELEASEINSTALLED" />
-    <Condition Message='PdfScribe requires .NET Framework 4.8 (or later).'>
+    <Condition Message='[ProductName] requires .NET Framework 4.8 (or later).'>
       <![CDATA[Installed or (WIXNETFX4RELEASEINSTALLED >= "#528040")]]>
     </Condition>
 

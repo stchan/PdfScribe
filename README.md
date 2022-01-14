@@ -1,11 +1,11 @@
-# PdfScribe v1.1.0
+# PdfScribe v1.1.2
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
 ## System Requirements
 
-* 64-bit Windows 7 or later
-* .NET Framework 4.6.1 or later
+* 64-bit Windows
+* .NET Framework 4.8 or later
 
 ## Building from source
 
@@ -34,6 +34,9 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.1.2
+* .NET 4.8 required
+* Fix for issue #26 by @Zhuangkh (Pull request [#40](https://github.com/stchan/PdfScribe/pull/40))
 #### v1.1.0
 * Redmon modification for issue #17 by @mca0815
 #### v1.0.9
@@ -56,4 +59,3 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Allow file appending if **OutputFile** setting is used.
 * GUI for configuration
 * Watermarking output
-
