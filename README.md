@@ -9,7 +9,7 @@ PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stch
 
 ## Building from source
 
-Visual Studio 2017, Wix 3.11, and Votive 2017 are required to build PdfScribe.
+Visual Studio 2017/Votive 2017 (or newer), and Wix 3.11 (or newer) are required to build PdfScribe.
 
 PdfScribe links to, and distributes the following third party components:
 
