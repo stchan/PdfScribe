@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
@@ -67,8 +67,7 @@ namespace PdfScribe
                     // dictate as much as possible
                     String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
                                                 String.Format("-sOutputFile={0}", outputFilename), standardInputFilename,
-                                                "-c", @"[/Creator(PdfScribe 1.1.0 (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
-
+                                                "-c", @"[/Creator(PdfScribe " + Assembly.GetExecutingAssembly().GetName().Version + " (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
                     GhostScript64.CallAPI(ghostScriptArguments);
                     DisplayPdf(outputFilename);
                 }
