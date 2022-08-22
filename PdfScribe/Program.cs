@@ -169,6 +169,8 @@ namespace PdfScribe
                             pdfFilenameDialog.ShowHelp = false;
                             pdfFilenameDialog.Title = "PDF Scribe - Set output filename";
                             pdfFilenameDialog.ValidateNames = true;
+                            if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("REDMON_DOCNAME")))
+                                pdfFilenameDialog.FileName = Environment.GetEnvironmentVariable("REDMON_DOCNAME");
                             if (pdfFilenameDialog.ShowDialog(dialogOwner) == DialogResult.OK)
                             {
                                 outputFile = pdfFilenameDialog.FileName;
