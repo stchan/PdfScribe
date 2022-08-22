@@ -1,4 +1,4 @@
-# PdfScribe v1.1.2
+# PdfScribe v1.1.3
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -34,6 +34,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.1.3
+* Set output filename Dialog - PDF filename defaults to redmon document name. Inspired by changes @rainmakerho made (Pull request [#36](https://github.com/stchan/PdfScribe/pull/36))
 #### v1.1.2
 * Complete fix for issue #26 by @Zhuangkh (Pull request [#40](https://github.com/stchan/PdfScribe/pull/40))
 * .NET 4.8 required
