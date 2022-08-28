@@ -35,7 +35,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 
 ## Release notes
 #### v1.1.3
-* Set output filename Dialog - PDF filename defaults to redmon document name. Inspired by changes @rainmakerho made (Pull request [#36](https://github.com/stchan/PdfScribe/pull/36))
+* Set output filename dialog box - PDF filename defaults to redmon document name. Inspired by changes @rainmakerho made (Pull request [#36](https://github.com/stchan/PdfScribe/pull/36))
 #### v1.1.2
 * Complete fix for issue #26 by @Zhuangkh (Pull request [#40](https://github.com/stchan/PdfScribe/pull/40))
 * .NET 4.8 required
