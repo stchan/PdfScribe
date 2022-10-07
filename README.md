@@ -1,4 +1,4 @@
-# PdfScribe v1.1.3
+# PdfScribe v1.1.5
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -9,7 +9,7 @@ PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stch
 
 ## Building from source
 
-Visual Studio 2017/Votive 2017 (or newer), and Wix 3.11 (or newer) are required to build PdfScribe.
+Visual Studio 2019/Votive 2019 (or newer), and Wix 3.11 (or newer) are required to build PdfScribe.
 
 PdfScribe links to, and distributes the following third party components:
 
@@ -34,6 +34,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.1.5
+* Maintenance release, no new functionality. Link to Ghostscript 10.0, locally compiled redmon64pdfscribe.dll.
 #### v1.1.3
 * Set output filename dialog box - PDF filename defaults to redmon document name. Inspired by changes @rainmakerho made (Pull request [#36](https://github.com/stchan/PdfScribe/pull/36))
 #### v1.1.2
