@@ -1,0 +1,4 @@
+[submodule "redmon64pdfscribe"]
+	path = redmon64pdfscribe
+	url = https://github.com/stchan/redmon64pdfscribe.git
+	branch = master
