@@ -84,16 +84,6 @@
       <Component Id="PdfScribeExeConfig" Guid="{8665FD57-C8C8-46D2-9031-A1F826AB8FC0}">
         <File Source="$(var.PdfScribe.TargetDir)$(var.PdfScribe.TargetFileName).config" KeyPath="yes" />
       </Component>
-	  <!--
-      <Component Id="PdfScribeCoreDll" Guid="{4E776721-791F-47F4-A75C-186EA73640CE}">
-        <File Source="$(var.PdfScribeCore.TargetPath)" KeyPath="yes"  >
-          <netfx:NativeImage Id="$(var.PdfScribeCore.TargetFileName)" Platform="64bit" Priority="1"   />
-        </File>
-      </Component>
-      <Component Id="PdfScribeCoreDllPdb" Guid="{8979618A-C1B1-40B6-A400-D8DAF159184D}">
-        <File Source="$(var.PdfScribeCore.TargetDir)$(var.PdfScribeCore.TargetName).pdb" KeyPath="yes" />
-      </Component>
-	  -->
       <!-- Third party components -->
       <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">
         <File Source="..\Lib\gsdll64.dll" KeyPath="yes" />
