@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"  xmlns:netfx ="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.1.5" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+	<Product Id="*" Name="PDF Scribe" Language="1033" Version="1.2.0" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" 
              Platform="x64"
              InstallPrivileges="elevated" 
              Description="PDF Scribe Virtual Printer"
-             Comments="PDF Scribe Virtual Printer 1.1.5 installation package"
+             Comments="PDF Scribe Virtual Printer 1.2.0 installation package"
              Id="*" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
@@ -84,6 +84,7 @@
       <Component Id="PdfScribeExeConfig" Guid="{8665FD57-C8C8-46D2-9031-A1F826AB8FC0}">
         <File Source="$(var.PdfScribe.TargetDir)$(var.PdfScribe.TargetFileName).config" KeyPath="yes" />
       </Component>
+	  <!--
       <Component Id="PdfScribeCoreDll" Guid="{4E776721-791F-47F4-A75C-186EA73640CE}">
         <File Source="$(var.PdfScribeCore.TargetPath)" KeyPath="yes"  >
           <netfx:NativeImage Id="$(var.PdfScribeCore.TargetFileName)" Platform="64bit" Priority="1"   />
@@ -92,6 +93,7 @@
       <Component Id="PdfScribeCoreDllPdb" Guid="{8979618A-C1B1-40B6-A400-D8DAF159184D}">
         <File Source="$(var.PdfScribeCore.TargetDir)$(var.PdfScribeCore.TargetName).pdb" KeyPath="yes" />
       </Component>
+	  -->
       <!-- Third party components -->
       <Component Id="gsdll64dll" Guid="{96C2E5A1-15AD-4B27-A184-7AC1C2F08409}">
         <File Source="..\Lib\gsdll64.dll" KeyPath="yes" />

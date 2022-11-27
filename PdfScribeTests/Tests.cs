@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-using PdfScribeCore;
+using PdfScribeInstallCustomAction;
 
 namespace PdfScribeTests
 {
