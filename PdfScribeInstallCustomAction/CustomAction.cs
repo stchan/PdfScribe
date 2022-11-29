@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Deployment.WindowsInstaller;
 
-//using PdfScribeCore;
-
 namespace PdfScribeInstallCustomAction
 {
     /// <summary>
