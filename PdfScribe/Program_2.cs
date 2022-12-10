@@ -146,25 +146,28 @@ namespace PdfScribe
                 using (StreamReader inputReader = new StreamReader(File.OpenRead(postscriptFile), System.Text.Encoding.UTF8))
                 using (StreamWriter strippedWriter = new StreamWriter(File.OpenWrite(strippedFile), new UTF8Encoding(false)))
                 {
-                    bool redistillPhraseFound = false;
+                    NoDistillStripping strippingStatus = NoDistillStripping.Searching;
                     String inputLine;
                     while (!inputReader.EndOfStream)
                     {
                         inputLine = inputReader.ReadLine();
                         if (inputLine != null)
                         {
-                            if (redistillPhraseFound)
+                            switch ((int)strippingStatus)
                             {
-                                if (inputLine == "%ADOEndClientInjection: DocumentSetup Start \"No Re-Distill\"")
-                                    redistillPhraseFound = false;
-                            }
-                            else
-                            {
-                                if (inputLine == "%ADOBeginClientInjection: DocumentSetup Start \"No Re-Distill\"")
-                                    redistillPhraseFound = true;
-                                else
+                                case (int)NoDistillStripping.Searching:
+                                    if (inputLine == "%ADOBeginClientInjection: DocumentSetup Start \"No Re-Distill\"")
+                                        strippingStatus= NoDistillStripping.Removing;
+                                    else
+                                        strippedWriter.WriteLine(inputLine);
+                                    break;
+                                case (int)NoDistillStripping.Removing:
+                                    if (inputLine == "%ADOEndClientInjection: DocumentSetup Start \"No Re-Distill\"")
+                                        strippingStatus = NoDistillStripping.Complete;
+                                        break;
+                                case (int)NoDistillStripping.Complete:
                                     strippedWriter.WriteLine(inputLine);
-
+                                    break;
                             }
                         }
                     }

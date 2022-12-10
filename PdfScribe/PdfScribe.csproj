@@ -99,6 +99,7 @@
     <Compile Include="..\Common\PdfScribeSharedAssemblyInfo.cs">
       <Link>PdfScribeSharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConstantsEnums.cs" />
     <Compile Include="GhostScript64.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
