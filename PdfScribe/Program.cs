@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 
 
@@ -58,6 +59,8 @@ namespace PdfScribe
                         standardInputReader.BaseStream.CopyTo(standardInputFile);
                     }
                 }
+
+                StripNoDistill(standardInputFilename);
 
                 if (GetPdfOutputFilename(ref outputFilename))
                 {
@@ -271,6 +274,47 @@ namespace PdfScribe
                             MessageBoxIcon.Error,
                             MessageBoxDefaultButton.Button1,
                             MessageBoxOptions.DefaultDesktopOnly);
+
+        }
+
+        static void StripNoDistill(String postscriptFile)
+        {
+            if (Properties.Settings.Default.StripNoRedistill)
+            {
+                String strippedFile = Path.GetTempFileName();
+
+                using (StreamReader inputReader = new StreamReader(File.OpenRead(postscriptFile), System.Text.Encoding.UTF8))
+                using (StreamWriter strippedWriter = new StreamWriter(File.OpenWrite(strippedFile), new UTF8Encoding(false)))
+                {
+                    bool redistillPhraseFound = false;
+                    String inputLine;
+                    while (!inputReader.EndOfStream)
+                    {
+                        inputLine = inputReader.ReadLine();
+                        if (inputLine != null)
+                        {
+                            if (redistillPhraseFound)
+                            {
+                                if (inputLine == "%ADOEndClientInjection: DocumentSetup Start \"No Re-Distill\"")
+                                    redistillPhraseFound = false;
+                            }
+                            else
+                            {
+                                if (inputLine == "%ADOBeginClientInjection: DocumentSetup Start \"No Re-Distill\"")
+                                    redistillPhraseFound = true;
+                                else
+                                    strippedWriter.WriteLine(inputLine);
+
+                            }
+                        }
+                    }
+                    strippedWriter.Close();
+                    inputReader.Close();
+                }
+
+                File.Delete(postscriptFile);
+                File.Move(strippedFile, postscriptFile);
+            }
 
         }
     }
