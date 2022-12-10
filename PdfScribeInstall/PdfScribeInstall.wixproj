@@ -72,6 +72,9 @@
   <ItemGroup>
     <EmbeddedResource Include="DialogOverrides.wxl" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="PdfScribePreprocessorVariables.wxi" />
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
