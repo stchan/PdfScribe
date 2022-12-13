@@ -1,4 +1,4 @@
-# PdfScribe v1.1.5
+# PdfScribe v1.3.0
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page for this project to download a prebuilt MSI package.
 
@@ -29,11 +29,14 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * ****AskUserForOutputFilename**** - set value to *true* if you want PdfScribe to ask the user where to save the PDF.
 * ****OutputFile**** - if there is a constant filename you want the PDF to be saved to, set its value here. Environment variables can be used. PdfScribe will overwrite each time. This setting is ignored if  **AskUserForOutputFilename** is set to *true*. Note that a literal % character cannot be used even though it is legal in a Windows filename.
 * ****OpenAfterCreating**** - set value to *true* if you want the PDF automatically opened with the default viewer. This setting is ignored if the file extension is not .PDF
+* ****StripNoRedistill**** - set to *true* if you want PdfScribe to remove any postscript that prevents printing of secured PDFs (see issues #25,#33 for details). A separate pass of the postscript output needs to be made, so only set to *true* if needed.
 
 ## Known Issues
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.3.0
+* Added **StripNoRedistill** option (fix for issue #33).
 #### v1.1.5
 * Maintenance release, no new functionality. Link to Ghostscript 10.0, locally compiled redmon64pdfscribe.dll.
 #### v1.1.3
