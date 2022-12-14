@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace PdfScribe
@@ -33,7 +34,11 @@ namespace PdfScribe
                             pdfFilenameDialog.Title = "PDF Scribe - Set output filename";
                             pdfFilenameDialog.ValidateNames = true;
                             if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("REDMON_DOCNAME")))
-                                pdfFilenameDialog.FileName = Environment.GetEnvironmentVariable("REDMON_DOCNAME");
+                            {
+                                // Replace illegal characters with spaces
+                                Regex regEx = new Regex(@"[\\/:""*?<>|]");
+                                pdfFilenameDialog.FileName = regEx.Replace(Environment.GetEnvironmentVariable("REDMON_DOCNAME"), " ");
+                            }
                             if (pdfFilenameDialog.ShowDialog(dialogOwner) == DialogResult.OK)
                             {
                                 outputFile = pdfFilenameDialog.FileName;
