@@ -34,8 +34,6 @@ namespace PdfScribe
         #region Other constants
         const string traceSourceName = "PdfScribe";
 
-        //const string defaultOutputFilename = "PDFSCRIBE.PDF";
-
         #endregion
 
         static TraceSource logEventSource = new TraceSource(traceSourceName);
@@ -68,9 +66,7 @@ namespace PdfScribe
                     File.Delete(outputFilename);
                     // Only set absolute minimum parameters, let the postscript input
                     // dictate as much as possible
-                    String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER",  "-sDEVICE=pdfwrite",
-                                                String.Format("-sOutputFile={0}", outputFilename), standardInputFilename,
-                                                "-c", @"[/Creator(PdfScribe " + Assembly.GetExecutingAssembly().GetName().Version + " (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
+                    String[] ghostScriptArguments = { "-dBATCH", "-dNOPAUSE", "-dSAFER", "-dAutoRotatePages=/None",  "-sDEVICE=pdfwrite", String.Format("-sOutputFile={0}", outputFilename), standardInputFilename, "-c", @"[/Creator(PdfScribe " + Assembly.GetExecutingAssembly().GetName().Version + " (PSCRIPT5)) /DOCINFO pdfmark", "-f"};
                     GhostScript64.CallAPI(ghostScriptArguments);
                     DisplayPdf(outputFilename);
                 }
