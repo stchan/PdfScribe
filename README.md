@@ -1,4 +1,4 @@
-# PdfScribe v1.3.0
+# PdfScribe v1.3.1
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page to download a prebuilt MSI package.
 
@@ -35,6 +35,8 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
+#### v1.3.1
+* Set GS AutoRotatePages to /None (issue #32)
 #### v1.3.0
 * Added **StripNoRedistill** option (fix for issue #33).
 #### v1.1.5
