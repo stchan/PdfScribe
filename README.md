@@ -1,4 +1,4 @@
-# PdfScribe v1.3.1
+# PdfScribe v1.3.2
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page to download a prebuilt MSI package.
 
@@ -9,7 +9,7 @@ PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stch
 
 ## Building from source
 
-Visual Studio 2019/Votive 2019 (or newer), and Wix 3.11 (or newer) are required to build PdfScribe.
+Visual Studio 2022/Votive 2022, and Wix 3.11 (or newer) are required to build PdfScribe.
 
 PdfScribe links to, and distributes the following third party components:
 
@@ -35,7 +35,7 @@ In the application config file (PdfScribe.exe.config), there are the following s
 * Check repo [issues](https://github.com/stchan/PdfScribe/issues) for the latest.
 
 ## Release notes
-#### v1.3.1
+#### v1.3.2
 * Set GS AutoRotatePages to /None (issue #32)
 #### v1.3.0
 * Added **StripNoRedistill** option (fix for issue #33).

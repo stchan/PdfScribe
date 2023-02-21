@@ -95,10 +95,18 @@
     </CreateProperty>
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>powershell -command "(Get-FileHash -Algorithm SHA512 %27!(TargetPath)%27).Hash + %27 %2a%27 + (Split-Path %27!(TargetPath)%27 -leaf) | Out-File -filePath %27!(TargetPath).sha512%27 -encoding Default"
-powershell -command "((Get-Content %27!(TargetPath).sha512%27) -join \"`n\") + \"`n\" | Set-Content -NoNewline %27!(TargetPath).sha512%27"</PostBuildEvent>
+    <PreBuildEvent>powershell -command "del ((Split-Path %27!(TargetPath)%27 -parent) + %27\%2a.sha512%27)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>powershell -command "del ((Split-Path %27!(TargetPath)%27 -parent) + %27\%2a.sha512%27)"</PreBuildEvent>
+    <PostBuildEvent>powershell -command "(Get-FileHash -Algorithm SHA512 %27!(TargetPath)%27).Hash + %27 %2a%27 + (Split-Path %27!(TargetPath)%27 -leaf) | Out-File -filePath %27!(TargetPath).sha512%27 -encoding Default"
+powershell -command "((Get-Content %27!(TargetPath).sha512%27) -join \"`n\") + \"`n\" | Set-Content -NoNewline %27!(TargetPath).sha512%27"
+if $(ConfigurationName) == Release (
+    cd /d $(SolutionDir)
+    if NOT EXIST "publish\" mkdir "publish"
+    if NOT EXIST "publish\unsigned" mkdir "publish\unsigned"
+    del /q "publish\unsigned\%2a"
+    copy /y "!(TargetPath)" "publish\unsigned" 
+    copy /y "!(TargetPath).sha512" "publish\unsigned" 
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

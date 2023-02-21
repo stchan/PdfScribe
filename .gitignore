@@ -1,15 +1,4 @@
-obj
-bin
-obj
-bin
 TestResult.xml
-*.suo
-PdfScribeCore.csproj.user
-PdfScribe.csproj.user
-/PdfScribeInstall/PrimaryOutputHarvest/*.pdb
-/PdfScribeInstall/PrimaryOutputHarvest/*.exe
-/PdfScribeInstall/PrimaryOutputHarvest/*.config
-/PdfScribeInstall/PrimaryOutputHarvest/*.dll
 
 #Ignore thumbnails created by Windows
 Thumbs.db
@@ -42,3 +31,4 @@ _ReSharper*/
 .vs/
 #Nuget packages folder
 packages/
+publish/
