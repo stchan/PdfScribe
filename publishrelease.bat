@@ -7,7 +7,7 @@ if EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\Vs
     del /q "publish\signed\*"
     copy /y  "publish\unsigned\PdfScribeInstall_*.msi" "publish\signed\"
     cd "publish\signed\"
-    signtool sign /n "Open Source Developer, Sherman Chan" /t http://time.certum.pl /fd sha256 /v PdfScribeInstall_*.msi
+    signtool sign /sha1 %CodeSignHash% /t http://time.certum.pl /fd sha256 /v PdfScribeInstall_*.msi
 ) ELSE (
     echo Could not set build tools environment.
     exit 1
