@@ -37,7 +37,7 @@ namespace PdfScribe
                             {
                                 // Replace illegal characters with spaces
                                 Regex regEx = new Regex(@"[\\/:""*?<>|]");
-                                pdfFilenameDialog.FileName = regEx.Replace(Environment.GetEnvironmentVariable("REDMON_DOCNAME"), " ");
+                                pdfFilenameDialog.FileName = regEx.Replace(Environment.GetEnvironmentVariable("REDMON_DOCNAME"), " ") + ".pdf";
                             }
                             if (pdfFilenameDialog.ShowDialog(dialogOwner) == DialogResult.OK)
                             {
