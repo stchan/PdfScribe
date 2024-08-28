@@ -1,6 +1,5 @@
-echo off
-if EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" (
-    call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
+if EXIST "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" (
+    call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
     echo on
     msbuild PdfScribe.sln  -t:Rebuild -p:Configuration=Release -r
     if NOT EXIST "publish\signed" mkdir "publish\signed"
