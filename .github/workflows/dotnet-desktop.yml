@@ -1,6 +1,9 @@
 name: PdfScribeInstallerBuild
 
-on: workflow_dispatch
+on: 
+  push:
+    branches:
+      - "build-msi"
 
 jobs:
   Build-Installer:
@@ -15,13 +18,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - run: Test-Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
       shell: pwsh
     
-    # - name: build the imagefile
-    #   working-directory: ${{env.GITHUB_WORKSPACE}}
-    #   run:  publishrelease.bat
-    #   shell: cmd
+    - name: build the imagefile
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run:  publishrelease.bat
+      shell: cmd
       
 
     # # Install the .NET Core workload
