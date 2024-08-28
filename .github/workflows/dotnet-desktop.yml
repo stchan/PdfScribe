@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v4.3.6
       with:
         path: 
-          ".\PdfScribeInstall\\bin\\x64\\Release\\en-us\\*.msi"
+          ".\\PdfScribeInstall\\bin\\x64\\Release\\en-us\\*.msi"
 
     # # Install the .NET Core workload
     # - name: Install .NET Core
