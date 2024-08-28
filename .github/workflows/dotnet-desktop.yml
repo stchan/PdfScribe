@@ -14,7 +14,11 @@ jobs:
     #   Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
-    - run: publishrelease.bat
+    - uses: actions/checkout@v4
+    - name: build the imagefile
+      run:  C:\AivikaVpd\publishrelease.bat
+      shell: cmd
+      working-directory: C:\AivikaVpd
 
     # # Install the .NET Core workload
     # - name: Install .NET Core
