@@ -16,9 +16,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: build the imagefile
-      run:  C:\AivikaVpd\publishrelease.bat
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run:  publishrelease.bat
       shell: cmd
-      working-directory: C:\AivikaVpd
+      
 
     # # Install the .NET Core workload
     # - name: Install .NET Core
