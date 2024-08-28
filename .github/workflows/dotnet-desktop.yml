@@ -15,8 +15,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - run: |
-        IF EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" ( echo exists) ELSE (echo does not exist)
+    - run: IF EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" ( echo exists) ELSE (echo does not exist)
+      shell: pwsh
     
     # - name: build the imagefile
     #   working-directory: ${{env.GITHUB_WORKSPACE}}
