@@ -19,7 +19,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - run: Test-Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+    - run: |
+        if (-not (Test-Path -Path $folderPath)) {
+            New-Item -Path $folderPath -ItemType Directory
+            Write-Output "Folder Created Successfully!"
+        }
+        else {
+            Write-Output "Folder already exists!"
+        }
       shell: pwsh
     
     - name: build the imagefile
