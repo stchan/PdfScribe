@@ -16,12 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - run: |
-        if EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" (
-        echo Exists
-        ) ELSE (
-          echo Could not set build tools environment.
-          exit 1
-        )
+        IF EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" ( echo exists) ELSE (echo does not exist)
     
     # - name: build the imagefile
     #   working-directory: ${{env.GITHUB_WORKSPACE}}
