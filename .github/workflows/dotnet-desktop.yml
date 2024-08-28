@@ -20,6 +20,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - run: |
+        $folderPath = ".\PdfScribeInstall\bin\x64\Release\en-us"
         if (-not (Test-Path -Path $folderPath)) {
             New-Item -Path $folderPath -ItemType Directory
             Write-Output "Folder Created Successfully!"
