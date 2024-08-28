@@ -15,10 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: build the imagefile
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run:  publishrelease.bat
-      shell: cmd
+    - run: |
+        if EXIST "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" ( \
+          echo Exists \
+          ) ELSE ( \
+            echo Could not set build tools environment. \
+            exit 1 \
+          )
+    
+    # - name: build the imagefile
+    #   working-directory: ${{env.GITHUB_WORKSPACE}}
+    #   run:  publishrelease.bat
+    #   shell: cmd
       
 
     # # Install the .NET Core workload
