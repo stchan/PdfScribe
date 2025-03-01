@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
+﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 	<?define ProductVersion="!(bind.FileVersion.PdfScribeExe)" ?>
 	<?define ProductName="PDF Scribe"?>
 </Include>
