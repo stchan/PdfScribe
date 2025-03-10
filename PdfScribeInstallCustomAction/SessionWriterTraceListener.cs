@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Microsoft.Deployment.WindowsInstaller;
+using WixToolset.Dtf.WindowsInstaller;
 
 namespace PdfScribeInstallCustomAction
 {

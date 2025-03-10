@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj">
-      <Project>{e8679e1b-8c89-4201-97d5-7e43c5a486c9}</Project>
+      <Project>{47ad53ee-0034-2e44-a67c-461cb6a55fc3}</Project>
       <Name>PdfScribeInstallCustomAction</Name>
     </ProjectReference>
   </ItemGroup>
