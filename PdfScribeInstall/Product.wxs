@@ -1,7 +1,5 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-	<?include .\PdfScribePreprocessorVariables.wxi ?>
-
-	<Package Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Black Telescope Workshop" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
+	<Package Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(ProductManufacturer)" UpgradeCode="409ff0d1-1c3a-4f8d-8a5a-350705977809">
 		<SummaryInformation Description="PDF Scribe Virtual Printer" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." Schedule="afterInstallExecute" AllowDowngrades="no" AllowSameVersionUpgrades="no" />
