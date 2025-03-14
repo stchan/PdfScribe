@@ -1,4 +1,4 @@
-# PdfScribe v1.3.2
+# PdfScribe v1.4.0
 
 PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stchan/PdfScribe/releases) page to download a prebuilt MSI package.
 
@@ -36,4 +36,4 @@ In the application config file (PdfScribe.exe.config), there are the following s
 
 ## Release notes
 #### v1.4.0
-* Wix (installer) upgrade, Ghostscript 10.5
+* Wix (installer) upgrade, Ghostscript 10.05, x64 CPU required to install

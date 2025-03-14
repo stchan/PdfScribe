@@ -21,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
     <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj" />
