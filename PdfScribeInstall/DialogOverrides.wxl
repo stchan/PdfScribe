@@ -3,7 +3,13 @@
   <String Id="WelcomeUpdateDlgDescriptionUpdate" Overridable="yes" Value="[ProductName] will be updated to [ProductVersion]. Click Next to continue or Cancel to exit." />
   <String Id="WelcomeDlgTitle" Overridable="yes" Value="{\WixUI_Font_Bigger}[ProductName] [ProductVersion] Setup" />
 
-  <!-- Some of these aren't currently used, but might as well make the changes while I'm here -->
+	<!-- _locID_text="PrepareDlg_Title" _locComment="PrepareDlg_Title" -->
+	<!-- _locID_text="PrepareDlgDescription" _locComment="PrepareDlgDescription" -->
+	<String Id="PrepareDlgDescription" Overridable="yes" Value="Preparing for installation..." />
+	<!-- _locID_text="PrepareDlgTitle" _locComment="PrepareDlgTitle" -->
+	<String Id="PrepareDlgTitle" Overridable="yes" Value="{\WixUI_Font_Bigger}[Manufacturer] [ProductName]" />
+
+	<!-- Some of these aren't currently used, but might as well make the changes while I'm here -->
   <String Id="VerifyReadyDlgInstallText" Overridable="yes" Value="Click Install to begin the installation. Click Back to review or change any of your installation settings. Click Cancel to exit." />
   <String Id="VerifyReadyDlgChangeText" Overridable="yes" Value="Click Change to begin the installation. Click Back to review or change any of your installation settings. Click Cancel to exit." />
   <String Id="VerifyReadyDlgRepairText" Overridable="yes" Value="Click Repair to repair the installation of [ProductName]. Click Back to review or change any of your installation settings. Click Cancel to exit." />
