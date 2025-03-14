@@ -1,46 +1,42 @@
 ﻿<Project>
-  <Import Project="Sdk.props" Sdk="WixToolset.Sdk" Version="5.0.2" />
-  <PropertyGroup>
-    <OutputName>PdfScribe_$(ProductVersion)_$(Platform)</OutputName>
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Label="Globals">
-    <DefineConstants>ProductVersion=$(ProductVersion);ProductManufacturer=$(Company);ProductName=$(ProductName)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DefineConstants>Debug;ProductVersion=$(ProductVersion);ProductManufacturer=$(Company);ProductName=$(ProductName)</DefineConstants>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-    <SuppressIces>ICE61;ICE03</SuppressIces>
-    <SuppressValidation>False</SuppressValidation>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
-    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj" />
-    <ProjectReference Include="..\PdfScribe\PdfScribe.csproj" />
-  </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="WixToolset.Sdk" Version="5.0.2" />
-  <!--
-  <Target Name="BeforeBuild">
-    <GetAssemblyIdentity AssemblyFiles="..\PdfScribe\bin\x64\$(Configuration)\PdfScribe.exe">
-      <Output TaskParameter="Assemblies" ItemName="AsmInfo" />
-    </GetAssemblyIdentity>
-    <CreateProperty Value="$(ProjectName)_%(AsmInfo.Version)">
-      <Output TaskParameter="Value" PropertyName="TargetName" />
-    </CreateProperty>
-  </Target>
-  -->
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell -command &quot;del ((Split-Path '!(TargetPath)' -parent) + '\*.sha512')&quot;" />
-  </Target>
-  <!-- CollectSuggestedVisualStudioComponentIds target is a temporary workaround for a bug in VS 2022 17.13 -->
-  <Target Name="CollectSuggestedVisualStudioComponentIds" />
+	<Import Project="Sdk.props" Sdk="WixToolset.Sdk" Version="5.0.2" />
+	<PropertyGroup>
+		<Platforms>x64</Platforms>
+		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+		<BuildConstants>ProductVersion=$(ProductVersion);ProductManufacturer=$(Company);ProductName=$(ProductName)</BuildConstants>
+	</PropertyGroup>
+	<Choose>
+		<!-- All non-release configurations -->
+		<When Condition=" '$(Configuration)'!='Release' ">
+			<PropertyGroup>
+				<DefineConstants>Debug;$(BuildConstants)</DefineConstants>
+				<OutputName>$(SolutionName)_$(Configuration)_$(ProductVersion)_$(Platform)</OutputName>
+			</PropertyGroup>
+		</When>
+		<!-- Release configuration -->
+		<Otherwise>
+			<PropertyGroup>
+				<DefineConstants>$(BuildConstants)</DefineConstants>
+				<OutputName>$(SolutionName)_$(ProductVersion)_$(Platform)</OutputName>
+				<SuppressIces>ICE61;ICE03</SuppressIces>
+				<SuppressValidation>False</SuppressValidation>
+			</PropertyGroup>
+		</Otherwise>
+	</Choose>
+	<ItemGroup>
+		<PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+		<PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
+		<PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj" />
+		<ProjectReference Include="..\PdfScribe\PdfScribe.csproj" />
+	</ItemGroup>
+	<Import Project="Sdk.targets" Sdk="WixToolset.Sdk" Version="5.0.2" />
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="powershell -command &quot;del ((Split-Path '!(TargetPath)' -parent) + '\*.sha512')&quot;" />
+	</Target>
+	<!-- CollectSuggestedVisualStudioComponentIds target is a temporary workaround for a bug in VS 2022 17.13 -->
+	<Target Name="CollectSuggestedVisualStudioComponentIds" />
 </Project>
