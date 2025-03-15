@@ -4,7 +4,7 @@ PdfScribe is a PDF virtual printer. Check the [releases](https://github.com/stch
 
 ## System Requirements
 
-* 64-bit Windows
+* 64-bit Windows (x64)
 * .NET Framework 4.8 or later
 
 ## Building from source

@@ -1,42 +1,46 @@
 ﻿<Project>
-	<Import Project="Sdk.props" Sdk="WixToolset.Sdk" Version="5.0.2" />
-	<PropertyGroup>
-		<Platforms>x64</Platforms>
-		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-		<BuildConstants>ProductVersion=$(ProductVersion);ProductManufacturer=$(Company);ProductName=$(ProductName)</BuildConstants>
-	</PropertyGroup>
-	<Choose>
-		<!-- All non-release configurations -->
-		<When Condition=" '$(Configuration)'!='Release' ">
-			<PropertyGroup>
-				<DefineConstants>Debug;$(BuildConstants)</DefineConstants>
-				<OutputName>$(SolutionName)_$(Configuration)_$(ProductVersion)_$(Platform)</OutputName>
-			</PropertyGroup>
-		</When>
-		<!-- Release configuration -->
-		<Otherwise>
-			<PropertyGroup>
-				<DefineConstants>$(BuildConstants)</DefineConstants>
-				<OutputName>$(SolutionName)_$(ProductVersion)_$(Platform)</OutputName>
-				<SuppressIces>ICE61;ICE03</SuppressIces>
-				<SuppressValidation>False</SuppressValidation>
-			</PropertyGroup>
-		</Otherwise>
-	</Choose>
-	<ItemGroup>
-		<PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
-		<PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
-		<PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj" />
-		<ProjectReference Include="..\PdfScribe\PdfScribe.csproj" />
-	</ItemGroup>
-	<Import Project="Sdk.targets" Sdk="WixToolset.Sdk" Version="5.0.2" />
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="powershell -command &quot;del ((Split-Path '!(TargetPath)' -parent) + '\*.sha512')&quot;" />
-	</Target>
-	<!-- CollectSuggestedVisualStudioComponentIds target is a temporary workaround for a bug in VS 2022 17.13 -->
-	<Target Name="CollectSuggestedVisualStudioComponentIds" />
+  <Import Project="Sdk.props" Sdk="WixToolset.Sdk" Version="5.0.2" />
+  <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <BuildConstants>ProductVersion=$(ProductVersion);ProductManufacturer=$(Company);ProductName=$(ProductName)</BuildConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Cultures />
+  </PropertyGroup>
+  <Choose>
+    <!-- All non-release configurations -->
+    <When Condition=" '$(Configuration)'!='Release' ">
+      <PropertyGroup>
+        <DefineConstants>Debug;$(BuildConstants)</DefineConstants>
+        <OutputName>$(SolutionName)_$(Configuration)_$(ProductVersion)_$(Platform)</OutputName>
+      </PropertyGroup>
+    </When>
+    <!-- Release configuration -->
+    <Otherwise>
+      <PropertyGroup>
+        <DefineConstants>$(BuildConstants)</DefineConstants>
+        <OutputName>$(SolutionName)_$(ProductVersion)_$(Platform)</OutputName>
+        <SuppressIces>ICE61;ICE03</SuppressIces>
+        <SuppressValidation>False</SuppressValidation>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PdfScribeInstallCustomAction\PdfScribeInstallCustomAction.csproj" />
+    <ProjectReference Include="..\PdfScribe\PdfScribe.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="WixToolset.Sdk" Version="5.0.2" />
+  <!-- CollectSuggestedVisualStudioComponentIds target is a temporary workaround for a bug in VS 2022 17.13 -->
+  <Target Name="CollectSuggestedVisualStudioComponentIds" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell -command &quot;(Get-FileHash -Algorithm SHA512 '$(TargetPath)').Hash + ' *' + (Split-Path '$(TargetPath)' -leaf) | Out-File -filePath '$(TargetPath).sha512' -encoding Default&quot;&#xD;&#xA;powershell -command &quot;((Get-Content '$(TargetPath).sha512') -join \&quot;`n\&quot;) + \&quot;`n\&quot; | Set-Content -NoNewline '$(TargetPath).sha512'&quot;&#xD;&#xA;if $(ConfigurationName) == Release (&#xD;&#xA;    cd /d $(SolutionDir)&#xD;&#xA;    if NOT EXIST &quot;publish\&quot; mkdir &quot;publish&quot;&#xD;&#xA;    if NOT EXIST &quot;publish\unsigned&quot; mkdir &quot;publish\unsigned&quot;&#xD;&#xA;    del /q &quot;publish\unsigned\*&quot;&#xD;&#xA;    copy /y &quot;$(TargetPath)&quot; &quot;publish\unsigned&quot; &#xD;&#xA;    copy /y &quot;$(TargetPath).sha512&quot; &quot;publish\unsigned&quot; &#xD;&#xA;)" />
+  </Target>
 </Project>
