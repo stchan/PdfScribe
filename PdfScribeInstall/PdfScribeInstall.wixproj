@@ -43,4 +43,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell -command &quot;(Get-FileHash -Algorithm SHA512 '$(TargetPath)').Hash + ' *' + (Split-Path '$(TargetPath)' -leaf) | Out-File -filePath '$(TargetPath).sha512' -encoding Default&quot;&#xD;&#xA;powershell -command &quot;((Get-Content '$(TargetPath).sha512') -join \&quot;`n\&quot;) + \&quot;`n\&quot; | Set-Content -NoNewline '$(TargetPath).sha512'&quot;&#xD;&#xA;if $(ConfigurationName) == Release (&#xD;&#xA;    cd /d $(SolutionDir)&#xD;&#xA;    if NOT EXIST &quot;publish\&quot; mkdir &quot;publish&quot;&#xD;&#xA;    if NOT EXIST &quot;publish\unsigned&quot; mkdir &quot;publish\unsigned&quot;&#xD;&#xA;    del /q &quot;publish\unsigned\*&quot;&#xD;&#xA;    copy /y &quot;$(TargetPath)&quot; &quot;publish\unsigned&quot; &#xD;&#xA;    copy /y &quot;$(TargetPath).sha512&quot; &quot;publish\unsigned&quot; &#xD;&#xA;)" />
   </Target>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd $(TargetDir)&#xD;&#xA;del DEL /Q /F /S &quot;*.sha512&quot;" />
+  </Target>
 </Project>
