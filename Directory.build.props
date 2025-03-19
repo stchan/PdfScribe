@@ -4,7 +4,7 @@
 		<Copyright>Copyright © 2014-2025</Copyright>
 		<AssemblyTrademark></AssemblyTrademark>
 		<AssemblyCulture></AssemblyCulture>
-		<Version>1.4.0</Version>
+		<Version>1.4.1</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
 		<ProductVersion>$(Version)</ProductVersion>
