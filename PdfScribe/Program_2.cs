@@ -98,12 +98,28 @@ namespace PdfScribe
 
         private static String GetOutputFilename()
         {
-            String outputFilename = Path.GetFullPath(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.OutputFile));
+            string rawFilename = Properties.Settings.Default.OutputFile;
+
+            if (rawFilename.Contains("%DATETIME%"))
+            {
+                string format = Properties.Settings.Default.DatetimeFormat;
+                if (string.IsNullOrWhiteSpace(format))
+                {
+                    format = "yyyy_MM_dd_HH_mm_ss"; // Fallback
+                }
+
+                string datetimeString = DateTime.Now.ToString(format);
+                rawFilename = rawFilename.Replace("%DATETIME%", datetimeString);
+            }
+
+            string outputFilename = Path.GetFullPath(Environment.ExpandEnvironmentVariables(rawFilename));
+
             // Check if there are any % characters -
             // even though it's a legal Windows filename character,
             // it is a special character to Ghostscript
             if (outputFilename.Contains("%"))
                 throw new ArgumentException("OutputFile setting contains % character.");
+
             return outputFilename;
         }
 

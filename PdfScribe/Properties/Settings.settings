@@ -14,5 +14,8 @@
     <Setting Name="StripNoRedistill" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="DatetimeFormat" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">yyyy_MM_dd_HH_mm_ss</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
